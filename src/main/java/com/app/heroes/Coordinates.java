@@ -5,7 +5,7 @@ public  class Coordinates {
     private     int     longitude;
     private     int     latitude;
     
-    public Coordinates(int longitude, int latitude, int height)
+    public Coordinates(int longitude, int latitude)
     {
         this.longitude = longitude;
         this.latitude = latitude;
@@ -27,5 +27,21 @@ public  class Coordinates {
 
     public int getLatitude() {
         return this.latitude;
+    }
+
+    public void moveLeft() {
+        this.latitude--;
+    }
+
+    public void moveRight() {
+        this.latitude++;
+    }
+
+    public void moveUp() {
+        this.longitude--;
+    }
+
+    public void moveDown() {
+        this.longitude++;
     }
 }

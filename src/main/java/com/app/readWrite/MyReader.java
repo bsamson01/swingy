@@ -1,11 +1,16 @@
-package  com.app.readWrite;
+package com.app.readWrite;
 import java.io.*;
 
 public class MyReader {
-    public static String readConsole() throws IOException
+    public static String readConsole()
     {
         BufferedReader reader =  new BufferedReader(new InputStreamReader(System.in));
-        return reader.readLine();
+        try {
+            return reader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
     
     public static String readFile(String filePath, int lineNumber) throws IOException

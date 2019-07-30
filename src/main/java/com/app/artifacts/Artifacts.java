@@ -10,13 +10,13 @@ public  class Artifacts {
     private Helm  helm;
     private Amour amour;
 
-    public Artifacts() throws IOException {
+    public Artifacts() {
         makeWeapon();
         makeHelm();
         makeAmour();
     }
 
-    public void makeWeapon() throws IOException {
+    public void makeWeapon() {
         System.out.println("Which weapon would you like?\n1. StormBreaker\n2. Bow And Arrow\n3. Gun");
         String name = MyReader.readConsole();
 
@@ -35,7 +35,7 @@ public  class Artifacts {
         }
     }
 
-    public void makeHelm() throws IOException {
+    public void makeHelm() {
         System.out.println("Which helm would you like?\n1. ChampionsHeadguard\n2. Kingdoms's Pride\n3. Blazeguard");
         String name = MyReader.readConsole();
 
@@ -54,7 +54,7 @@ public  class Artifacts {
         }
     }
 
-    public void makeAmour() throws IOException {
+    public void makeAmour() {
         System.out.println("Which amour would you like?\n1. Antique Blockade\n2. Guardian's Shield\n3. Light Shield");
         String name = MyReader.readConsole();
 

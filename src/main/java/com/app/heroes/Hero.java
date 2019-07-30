@@ -11,16 +11,16 @@ public  class Hero {
     private Coordinates coordinates;
     private int         coins;
 
-    public Hero(String nme) throws IOException {
+    public Hero(String nme) {
         this.name = nme;
         this.experience = 0;
         this.level = 1;
         this.stats = new Stats(1, 1, 100);
         this.artifacts = new Artifacts();
-        coordinates = new Coordinates(10, 10, 10);
+        coordinates = new Coordinates(0, 0);
     }
 
-    public Hero(String nme, int exp, Stats stats, Artifacts artifacts, Coordinates coordinates, int level) throws IOException {
+    public Hero(String nme, int exp, Stats stats, Artifacts artifacts, Coordinates coordinates, int level) {
         this.name = nme;
         this.experience = exp;
         this.level = level;
