@@ -11,13 +11,11 @@ public  class Coordinates {
         this.latitude = latitude;
     }
 
-    public  void    setLongitude(int longitude)
-    {
+    public  void    setLongitude(int longitude) {
         this.longitude = longitude;
     }
 
-    public  void    setLatitude(int latitude)
-    {
+    public  void    setLatitude(int latitude) {
         this.latitude = latitude;
     }
 

@@ -13,15 +13,42 @@ public class MyReader {
         return null;
     }
     
-    public static String readFile(String filePath, int lineNumber) throws IOException
-    {
+    public static String readFileLine(String filePath, int lineNumber) {
         String result;
         File file = new File(filePath);
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        for (int i = 0; i < lineNumber - 1; i++)
-            br.readLine();
-        result = br.readLine();
-        br.close();
-        return result;
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            for (int i = 0; i < lineNumber - 1; i++)
+                br.readLine();
+            result = br.readLine();
+            br.close();
+            return result;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String[] readFile(String filePath) {
+        String[] result = new String[256];
+        String line;
+        int i = 0;
+        File file = new File(filePath);
+        BufferedReader br;
+        try {
+            br = new BufferedReader(new FileReader(file));
+            while ((line = br.readLine()) != null) {
+                result[i] = line;
+                i++;
+            }
+            br.close();
+            return result;
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

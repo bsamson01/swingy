@@ -11,8 +11,7 @@ public class Main {
             String name = MyReader.readConsole();
             if (name != null) {
                 Hero myHero = new Hero(name);
-                Game game = new Game(1);
-                game.placeHero(myHero);
+                Game game = new Game(myHero);
                 game.play();
             }
         }

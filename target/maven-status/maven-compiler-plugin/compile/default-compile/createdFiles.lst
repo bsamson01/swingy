@@ -11,12 +11,12 @@ com/app/artifacts/helms/Helm.class
 com/app/artifacts/helms/ChampionsHeadguard.class
 com/app/main/Swingy.class
 com/app/artifacts/weapons/Weapon.class
-com/app/readWrite/MyReader.class
 com/app/artifacts/helms/Blazeguard.class
 com/app/heroes/Coordinates.class
+com/app/readWrite/MyReader.class
 com/app/readWrite/TestWriter.class
-com/app/artifacts/amour/LightShield.class
 com/app/artifacts/amour/Amour.class
+com/app/artifacts/amour/LightShield.class
 com/app/artifacts/amour/GuardiansShield.class
 com/app/artifacts/weapons/StormBreaker.class
 com/app/artifacts/weapons/BowAndArrow.class

@@ -1,7 +1,10 @@
 package com.app.game;
+
+import java.text.*;
 import java.util.*;
 import com.app.heroes.Hero;
 import com.app.readWrite.MyReader;
+import com.app.readWrite.TestWriter;
 
 public class Game {
     private int mapSize;
@@ -10,11 +13,12 @@ public class Game {
     private Hero hero;
     private int inBounds = 1;
 
-    public Game(int playerLevel) {
+    public Game(Hero player) {
+        this.hero = player;
+        int playerLevel = hero.getLevel();
         mapSize = (playerLevel - 1) * 5 + 10 - (playerLevel % 2);
         map = new int[mapSize][mapSize];
         intitalizeMap();
-        System.out.println();
     }
 
     private void intitalizeMap() {
@@ -28,13 +32,17 @@ public class Game {
                     map[i][y] = 0;
             }
         }
-        map[mapSize / 2][mapSize / 2] = 2;
+        map[(mapSize + 1) / 2][(mapSize + 1) / 2] = 2;
+        hero.getCoordinates().setLatitude((mapSize + 1) / 2);
+        hero.getCoordinates().setLongitude((mapSize + 1) / 2);
     }
 
-    public void remakeMap(int playerLevel) {
+    public void remakeMap() {
+        int playerLevel = hero.getLevel();
         mapSize = (playerLevel - 1) * 5 + 10 - (playerLevel % 2);
         map = new int[mapSize][mapSize];
         intitalizeMap();
+        inBounds = 1;
     }
 
     public void printMap() {
@@ -51,12 +59,6 @@ public class Game {
         }
     }
 
-    public void placeHero(Hero hero) {
-        this.hero = hero;
-        this.hero.getCoordinates().setLatitude(mapSize / 2);
-        this.hero.getCoordinates().setLongitude(mapSize / 2);
-    }
-
     public void play() {
         String cmd;
         while (true) {
@@ -69,10 +71,26 @@ public class Game {
             else
                 System.out.println("Invalid input");
             if (inBounds == 0)
-                break ;
+            {
+                System.out.println("Congratulations you have reached the end of the map. Do you want to load the new map? (y/n)");
+                cmd = MyReader.readConsole();
+                if (cmd.toLowerCase().compareToIgnoreCase("y") == 0 || cmd.toLowerCase().compareToIgnoreCase("yes") == 0) {
+                    remakeMap();
+                    PrintStats();
+                }
+                else
+                    break ;
+            }
         }
-        System.out.println("Thank you for playing");
+        // save();
+        // load(1);
     }
+
+    private void PrintStats() {
+        System.out.println("Hero name  : " + hero.getName());
+        System.out.println("Hero Level : " + hero.getLevel());
+        System.out.println("Hero Exp   : " + hero.getExp());
+    } 
 
     private void move(String direction) {
         int lat = hero.getCoordinates().getLatitude();
@@ -99,17 +117,26 @@ public class Game {
     }
 
     private void fight() {
-        if ((rand.nextInt(10) + 1) % 3 == 0)
+        if ((rand.nextInt(10) + 1) % 3 == 0) {
             System.out.println("Darkwolf killed you.");
+        }
         else
+        {
+            if ((rand.nextInt(10) + 1) % 3 == 0)
+                System.out.println("Darkwolf dropped a weapon");
             System.out.println("You slayed Darkwolf");
+            hero.gainExp(450);
+        }
+            
     }
 
     private void run() {
         if ((rand.nextInt(2) + 1) % 2 == 0)
             System.out.println("Darkwolf hit you while trying to escape and you died");
-        else
+        else {
             System.out.println("You successfully evaded Darkwolf");
+            hero.gainExp(20);
+        }
     }
 
     private void encounter() {
@@ -119,5 +146,28 @@ public class Game {
             fight();
         else
             run();
+    }
+
+    private void save() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+
+        String result;
+        String date = dateFormat.format(cal.getTime());
+        result = date + " | " + hero.getName() + " | " + hero.getExp() + " | " + hero.getLevel() + " | " + hero.getCoins() + " | "
+                + hero.getStats().getAttack() + " | " + hero.getStats().getDefense() + " | " + hero.getStats().getHp() + " | "
+                + hero.getArtifacts().getWeapon().getType() + " | " + hero.getArtifacts().getWeapon().getDamage() + " | "
+                + hero.getArtifacts().getAmour().getType() + " | " + hero.getArtifacts().getAmour().getDefence() + " | "
+                + hero.getArtifacts().getHelm().getType() + " | " + hero.getArtifacts().getHelm().getHp();
+        TestWriter.write(result);
+    }
+
+    private void load(int index) {
+        String data[] = MyReader.readFile("Game.txt");
+        String[] info;
+        for(int i = 0; data[i] != null; i++) {
+            info = data[i].split("|",  50);
+            System.out.println(info[1]);
+        }
     }
 }

@@ -11,7 +11,7 @@ public  class   TestWriter {
     private static void checkForFile()
     {
         try {
-            File file = new File("Simulator.txt");
+            File file = new File("Game.txt");
             if (file.exists())
                 return ;
             else
@@ -26,7 +26,7 @@ public  class   TestWriter {
     private static  void writeToFile(String content)
     {
         try {
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("Simulator.txt", true)));
+            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("Game.txt", true)));
             out.println(content);
             out.close();
 
@@ -40,7 +40,7 @@ public  class   TestWriter {
     public static  void deleteFile()
     {
         try {
-            File file = new File("Simulator.txt");
+            File file = new File("Game.txt");
             if (file.exists())
                 file.delete();
             else

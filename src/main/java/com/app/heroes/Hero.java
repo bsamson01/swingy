@@ -1,6 +1,5 @@
 package  com.app.heroes;
 import  com.app.artifacts.*;
-import java.io.*;
 
 public  class Hero {
     private String      name;
@@ -10,6 +9,7 @@ public  class Hero {
     private Artifacts   artifacts;
     private Coordinates coordinates;
     private int         coins;
+    private int         maxExp;
 
     public Hero(String nme) {
         this.name = nme;
@@ -20,13 +20,13 @@ public  class Hero {
         coordinates = new Coordinates(0, 0);
     }
 
-    public Hero(String nme, int exp, Stats stats, Artifacts artifacts, Coordinates coordinates, int level) {
+    public Hero(String nme, int exp, Stats stats, Artifacts artifacts, int level) {
         this.name = nme;
         this.experience = exp;
         this.level = level;
         this.stats = stats;
         this.artifacts = artifacts;
-        this.coordinates = coordinates;
+        this.coordinates = new Coordinates(0, 0);
     }
 
     public int getLevel() {
@@ -55,5 +55,18 @@ public  class Hero {
 
     public Artifacts getArtifacts() {
         return this.artifacts;
+    }
+
+    public void nextLevel() {
+        this.level++;
+        System.out.println("Congratulations you have leveled up to level " + this.level);
+    }
+
+    public void gainExp(int points) {
+        this.experience += points;
+        this.maxExp = this.level * 1000 + (this.level - 1) * (this.level - 1) * 450;
+        if (this.experience >= this.maxExp) {
+            this.nextLevel();
+        }
     }
 }
