@@ -31,4 +31,8 @@ public class Weapon {
     public String getType() {
         return (this.type);
     }
+
+    public void improve(int coins) {
+        this.stregnth += coins;
+    }
 }

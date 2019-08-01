@@ -1,17 +1,22 @@
 package com.app.game;
-
 import java.text.*;
 import java.util.*;
-import com.app.heroes.Hero;
-import com.app.readWrite.MyReader;
-import com.app.readWrite.TestWriter;
+import com.app.enemies.*;
+import com.app.heroes.*;
+import com.app.readWrite.*;
+
 
 public class Game {
     private int mapSize;
     private int[][] map;
     private Random rand = new Random();
     private Hero hero;
+    private Enemy enemy;
     private int inBounds = 1;
+    private String[] enemies = {"Darkwolf", "Downworlder", "Feral"};
+    private String[] weapons = {"Darkwolf", "Downworlder", "Feral"};
+    private String[] amour = {"Darkwolf", "Downworlder", "Feral"};
+    private String[] helm = {"Darkwolf", "Downworlder", "Feral"};
 
     public Game(Hero player) {
         this.hero = player;
@@ -43,6 +48,7 @@ public class Game {
         map = new int[mapSize][mapSize];
         intitalizeMap();
         inBounds = 1;
+        hero.combineStats();
     }
 
     public void printMap() {
@@ -117,30 +123,65 @@ public class Game {
     }
 
     private void fight() {
-        if ((rand.nextInt(10) + 1) % 3 == 0) {
-            System.out.println("Darkwolf killed you.");
+        int damage;
+        while (hero.getStats().getHp() > 0 && enemy.getStats().getHp() > 0) {
+
+            sleep(300);
+            damage = hero.getStats().getAttack() - enemy.getStats().getDefense();
+            enemy.getStats().reduceHp(damage);
+            System.out.println("You hit " + enemy.getName() + " by " + damage);
+            sleep(300);
+
+            if (enemy.getStats().getHp() > 0) {
+
+                damage = enemy.getStats().getAttack() - hero.getStats().getDefense();
+                hero.getStats().reduceHp(damage);
+                System.out.println(enemy.getName() + " hit you by " + damage);
+            }
         }
-        else
-        {
-            if ((rand.nextInt(10) + 1) % 3 == 0)
-                System.out.println("Darkwolf dropped a weapon");
-            System.out.println("You slayed Darkwolf");
-            hero.gainExp(450);
+        if (hero.getStats().getHp() < 0) {
+            System.out.println(enemy.getName() + " killed you");
         }
-            
+        else {
+            System.out.println("You slayed " + enemy.getName());
+            hero.gainExp(30);
+            hero.gainCoins(1);
+            if ((rand.nextInt(4) + 1) % 2 == 0) {
+                System.out.println(enemy.getName() + " dropped an item. Click 1 to inspect");
+
+            }
+        }
+    }
+
+    private void pickItem() {
+
     }
 
     private void run() {
-        if ((rand.nextInt(2) + 1) % 2 == 0)
-            System.out.println("Darkwolf hit you while trying to escape and you died");
+        if ((rand.nextInt(2) + 1) % 2 == 0) {
+                System.out.println("You successfully evaded " + enemy.getName());
+                hero.gainExp(20);
+        }
         else {
-            System.out.println("You successfully evaded Darkwolf");
-            hero.gainExp(20);
+            System.out.println(enemy.getName() + "hit by " + enemy.getStats().getAttack() * 3 + " because you chicked out");
+            hero.getStats().reduceHp(enemy.getStats().getAttack() * 3);
+        }
+    }
+
+    private void sleep(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
     private void encounter() {
-        System.out.println("You met darkwolf. Fight or run? ");
+        int type = rand.nextInt(3 - 1) + 1;
+        enemy = new Enemy(enemies[type], hero.getLevel());
+
+        System.out.println("You met "+ enemy.getName() +". Fight or run? ");
+        enemy.printStats();
         String act = MyReader.readConsole();
         if (act.toLowerCase().compareToIgnoreCase("fight") == 0)
             fight();

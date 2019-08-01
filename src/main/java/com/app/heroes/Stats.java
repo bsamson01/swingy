@@ -5,7 +5,7 @@ public  class Stats {
     private int     defense;
     private int     hp;
 
-    Stats(int attack, int defense, int hp) {
+    public Stats(int attack, int defense, int hp) {
         this.attack = attack;
         this.defense = defense;
         this.hp = hp;
@@ -23,7 +23,7 @@ public  class Stats {
         return this.hp;
     }
 
-    public void updateHp(int newHp) {
-        this.hp = newHp;
+    public void reduceHp(int damage) {
+        this.hp -= damage;
     }
 }

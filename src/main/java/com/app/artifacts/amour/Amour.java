@@ -31,4 +31,8 @@ public class Amour {
     public String getType() {
         return (this.type);
     }
+
+    public void improve(int coins) {
+        this.defence += coins;
+    }
 }

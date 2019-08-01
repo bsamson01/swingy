@@ -31,4 +31,8 @@ public class Helm {
     public String getType() {
         return (this.type);
     }
+
+    public void improve(int coins) {
+        this.hp += coins;
+    }
 }

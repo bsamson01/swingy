@@ -2,8 +2,7 @@ package com.app.artifacts;
 import  com.app.artifacts.helms.*;
 import  com.app.artifacts.amour.*;
 import  com.app.artifacts.weapons.*;
-import  com.app.readWrite.*;
-import java.io.*;
+import com.app.readWrite.*;
 
 public  class Artifacts {
     private Weapon weapon;
