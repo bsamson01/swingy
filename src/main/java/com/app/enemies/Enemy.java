@@ -9,8 +9,8 @@ public class Enemy {
 
     public Enemy(String name, int playerLevel) {
         int attack = (rand.nextInt(10) + playerLevel * 10);
-        int defence = (rand.nextInt(5) + playerLevel * 10);
-        int hp = rand.nextInt(80 + (playerLevel * 10)) + 40;
+        int defence = (rand.nextInt(10) + playerLevel * 10);
+        int hp = rand.nextInt(80 + (playerLevel * 10)) + 80;
         this.stats = new Stats(attack, defence, hp);
         this.type = name;
     }

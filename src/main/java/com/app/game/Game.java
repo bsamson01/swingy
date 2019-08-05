@@ -1,6 +1,9 @@
 package com.app.game;
 import java.text.*;
 import java.util.*;
+import com.app.artifacts.*;
+import com.app.artifacts.weapons.*;
+import com.app.debug.*;
 import com.app.enemies.*;
 import com.app.heroes.*;
 import com.app.readWrite.*;
@@ -14,11 +17,12 @@ public class Game {
     private Enemy enemy;
     private int inBounds = 1;
     private String[] enemies = {"Darkwolf", "Downworlder", "Feral"};
-    private String[] weapons = {"Darkwolf", "Downworlder", "Feral"};
-    private String[] amour = {"Darkwolf", "Downworlder", "Feral"};
-    private String[] helm = {"Darkwolf", "Downworlder", "Feral"};
+    private Artifacts tmpArtifacts;
+    private Boolean alive = true;
 
-    public Game(Hero player) {
+    public Game() {}
+
+    public void setHero(Hero player) {
         this.hero = player;
         int playerLevel = hero.getLevel();
         mapSize = (playerLevel - 1) * 5 + 10 - (playerLevel % 2);
@@ -66,8 +70,11 @@ public class Game {
     }
 
     public void play() {
+        this.alive = true;
+        this.tmpArtifacts = new Artifacts("temp");
         String cmd;
-        while (true) {
+        remakeMap();
+        while (alive) {
             System.out.println("Please enter a direction you want to move");
             cmd = MyReader.readConsole();
             if (cmd.toLowerCase().compareToIgnoreCase("left") == 0 || cmd.toLowerCase().compareToIgnoreCase("right") == 0 || cmd.toLowerCase().compareToIgnoreCase("up") == 0 || cmd.toLowerCase().compareToIgnoreCase("down") == 0)
@@ -78,25 +85,64 @@ public class Game {
                 System.out.println("Invalid input");
             if (inBounds == 0)
             {
-                System.out.println("Congratulations you have reached the end of the map. Do you want to load the new map? (y/n)");
+                System.out.println("Congratulations you have reached the end of the map.");
+                PrintStats();
+                System.out.println("Do you want to load a new map? (y/n)");
                 cmd = MyReader.readConsole();
-                if (cmd.toLowerCase().compareToIgnoreCase("y") == 0 || cmd.toLowerCase().compareToIgnoreCase("yes") == 0) {
+                if (cmd.toLowerCase().compareToIgnoreCase("y") == 0 || cmd.toLowerCase().compareToIgnoreCase("yes") == 0)
                     remakeMap();
-                    PrintStats();
-                }
                 else
                     break ;
             }
         }
-        // save();
-        // load(1);
     }
 
     private void PrintStats() {
-        System.out.println("Hero name  : " + hero.getName());
-        System.out.println("Hero Level : " + hero.getLevel());
-        System.out.println("Hero Exp   : " + hero.getExp());
-    } 
+        System.out.println("--------------------------------------------");
+        System.out.println("|  Hero name  : " + hero.getName());
+        System.out.println("|  Hero Level : " + hero.getLevel());
+        System.out.println("|  Hero Exp   : " + hero.getExp());
+        System.out.println("|  Hero Hp    : " + hero.getStats().getHp());
+        System.out.println("|  Hero coins : " + hero.getCoins());
+        System.out.println("--------------------------------------------");
+    }
+
+    private void store() {
+        if (hero.getCoins() > 0) {
+            while(true) {
+                System.out.println("----------------Store---------------");
+                System.out.println("|            "+hero.getCoins()+"coins");
+                System.out.println("| 1. Upgrade Weapon                |");
+                System.out.println("| 2. Upgrade Helm                  |");
+                System.out.println("| 3. Upgrade Amour                 |");
+                System.out.println("| 4. Buy health potion             |");
+                System.out.println("| 5. Main menu                     |");
+                System.out.println("------------------------------------");
+                String cmd = MyReader.readConsole();
+
+                if (Debug.isInteger(cmd)) {
+                    int val = Integer.parseInt(cmd);
+                    if (val == 1) {
+                        hero.getArtifacts().getWeapon().printInfo();
+                        System.out.println("Enter amount of coins to upgrade your weapon ("+hero.getCoins()+"coins available)");
+                        String tmp = MyReader.readConsole();
+                        if (Debug.isInteger(tmp) && Integer.parseInt(tmp) <= hero.getCoins() && Integer.parseInt(tmp) > 0) {
+                            hero.getArtifacts().getWeapon().improve(Integer.parseInt(tmp));
+                            hero.useCoins(Integer.parseInt(tmp));
+                            System.out.println("Weapon upgraded");
+                            hero.getArtifacts().getWeapon().printInfo();
+                        }
+                        else
+                            System.out.println("Invalid entry");
+                    }
+                    else if (val == 5)
+                        break ;
+                }
+            }
+        }
+        else
+            System.out.println("Sorry, You do not have any coins to access the store");
+    }
 
     private void move(String direction) {
         int lat = hero.getCoordinates().getLatitude();
@@ -124,47 +170,130 @@ public class Game {
 
     private void fight() {
         int damage;
+        enemy.printStats();
+
         while (hero.getStats().getHp() > 0 && enemy.getStats().getHp() > 0) {
 
             sleep(300);
-            damage = hero.getStats().getAttack() - enemy.getStats().getDefense();
-            enemy.getStats().reduceHp(damage);
-            System.out.println("You hit " + enemy.getName() + " by " + damage);
+            damage = hero.getStats().getAttack() - (int)(0.5 * enemy.getStats().getDefense());
+            if (damage < (int)(0.2 * hero.getStats().getAttack()))
+                damage = (int)(0.2 * hero.getStats().getAttack());
+            if (rand.nextInt(8) == 4) {
+                enemy.getStats().reduceHp(damage * 3);
+                System.out.println("You hit " + enemy.getName() + " by " + damage * 3 + "(critical hit)");
+            }
+            else {
+                enemy.getStats().reduceHp(damage);
+                System.out.println("You hit " + enemy.getName() + " by " + damage);
+            }
             sleep(300);
 
             if (enemy.getStats().getHp() > 0) {
-
-                damage = enemy.getStats().getAttack() - hero.getStats().getDefense();
-                hero.getStats().reduceHp(damage);
-                System.out.println(enemy.getName() + " hit you by " + damage);
+                damage = enemy.getStats().getAttack() - (int)(0.3 * hero.getStats().getDefense());
+                if (damage < (int)(0.4 *enemy.getStats().getAttack()));
+                    damage = (int)(0.4 *enemy.getStats().getAttack());
+                if (rand.nextInt(5) == 3) {
+                    hero.getStats().reduceHp(damage * 5);
+                    System.out.println(enemy.getName() + " hit you by " + damage * 5 + "(critical hit)");
+                }
+                else {
+                    hero.getStats().reduceHp(damage);
+                    System.out.println(enemy.getName() + " hit you by " + damage);
+                }
             }
         }
         if (hero.getStats().getHp() < 0) {
             System.out.println(enemy.getName() + " killed you");
+            this.alive = false;
         }
         else {
             System.out.println("You slayed " + enemy.getName());
-            hero.gainExp(30);
-            hero.gainCoins(1);
-            if ((rand.nextInt(4) + 1) % 2 == 0) {
-                System.out.println(enemy.getName() + " dropped an item. Click 1 to inspect");
+            hero.gainExp(300 / hero.getLevel());
+            hero.gainCoins(1 * hero.getLevel());
+            pickItem();
+        }
+    }
 
-            }
+    public void menu() {
+        System.out.println("------------Main menu------------");
+        System.out.println("|       Select an option        |");
+        System.out.println("| 1. Continue                   |");
+        System.out.println("| 2. New Game                   |");
+        System.out.println("| 3. Load Another Hero          |");
+        System.out.println("| 4. Hero Info                  |");
+        System.out.println("| 5. Store                      |");
+        System.out.println("| 6. Exit                       |");
+        System.out.println("-------------Swingy--------------");
+        String cmd = MyReader.readConsole();
+        if (Debug.isInteger(cmd)) {
+            int val;
+            val = Integer.parseInt(cmd);
+            if (val == 1)
+                play();
+            else if (val == 2)
+                play();
+            else if (val == 3)
+                play();
+            else if (val == 4)
+                hero.printInfo();
+            else if (val == 5)
+               store();
+            else if (val == 6)
+                System.out.println("Quiting...");
         }
     }
 
     private void pickItem() {
+        int val;
+        String cmd;
+        if ((rand.nextInt(4) + 1) % 2 == 0) {
+            System.out.println(enemy.getName() + " dropped an item . Click 1 to inspect or any key to ignore"); 
+            cmd = MyReader.readConsole();
+            if (cmd.compareToIgnoreCase("1") == 0) {
+                val = rand.nextInt(2) + 1;
 
+                if (val == 1) {
+                    tmpArtifacts.setWeapon(Artifacts.generateWeapon(hero.getLevel()));
+                    tmpArtifacts.getWeapon().printInfo();
+                }
+                else if (val == 2) {
+                    tmpArtifacts.setAmour(Artifacts.generateAmour(hero.getLevel()));
+                    tmpArtifacts.getAmour().printName();
+                }
+                else {
+                    tmpArtifacts.setHelm(Artifacts.generateHelm(hero.getLevel()));
+                    tmpArtifacts.getHelm().printName();
+                }
+
+                System.out.println("Do you want to equip(e) or destroy(any key)?");
+                cmd = MyReader.readConsole();
+                if (cmd.compareToIgnoreCase("e") == 0) {
+                    if (val == 1) {
+                        hero.getArtifacts().setWeapon(this.tmpArtifacts.getWeapon());
+                    }
+                    else if (val == 2) {
+                        hero.getArtifacts().setAmour(this.tmpArtifacts.getAmour());
+                    }
+                    else {
+                        hero.getArtifacts().setHelm(this.tmpArtifacts.getHelm());
+                    }
+                }
+            }
+        }
     }
 
     private void run() {
         if ((rand.nextInt(2) + 1) % 2 == 0) {
                 System.out.println("You successfully evaded " + enemy.getName());
-                hero.gainExp(20);
+                hero.gainExp(100 / hero.getLevel());
         }
         else {
-            System.out.println(enemy.getName() + "hit by " + enemy.getStats().getAttack() * 3 + " because you chicked out");
+            System.out.println(enemy.getName() + " hit you by " + enemy.getStats().getAttack() * 3 + " because you chicked out");
             hero.getStats().reduceHp(enemy.getStats().getAttack() * 3);
+        }
+        if (hero.getStats().getHp() < 0) {
+            System.out.println(enemy.getName() + " killed you");
+            this.alive = false;
         }
     }
 
@@ -181,7 +310,6 @@ public class Game {
         enemy = new Enemy(enemies[type], hero.getLevel());
 
         System.out.println("You met "+ enemy.getName() +". Fight or run? ");
-        enemy.printStats();
         String act = MyReader.readConsole();
         if (act.toLowerCase().compareToIgnoreCase("fight") == 0)
             fight();

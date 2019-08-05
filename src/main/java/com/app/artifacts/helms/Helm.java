@@ -1,4 +1,6 @@
-package  com.app.artifacts.helms;
+package com.app.artifacts.helms;
+
+import java.util.*;
 
 public class Helm {
     private int level;
@@ -6,8 +8,10 @@ public class Helm {
     protected String type;
 
     Helm(int points, int playerLevel, String typ) {
-        this.hp =  (playerLevel - 1) * 10 + points;
-        this.level = (this.hp / 10) + 1;
+        Random rand = new Random();
+        points = rand.nextInt(playerLevel * 10);
+        this.hp =  (playerLevel - 1) * 20 + points;
+        this.level = (this.hp / 20) + 1;
         this.type = typ;
     }
 
@@ -25,7 +29,8 @@ public class Helm {
     }
 
     public void printName() {
-        System.out.println("Helm :-> " + this.type + " :: Hp :-> +" + this.getHp());
+        System.out.println("Helm :-> " + this.type );
+        System.out.println("Hp   :-> " + this.getHp());
     }
 
     public String getType() {

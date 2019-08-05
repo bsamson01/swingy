@@ -1,5 +1,5 @@
 package  com.app.main;
-import  com.app.readWrite.*;
+// import  com.app.readWrite.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,6 +29,7 @@ public class Swingy implements ActionListener {
     private TextArea createTextArea(String initialMsg, int startX, int startY, int width, int height) {
         TextArea newTextArea = new TextArea(initialMsg);
         newTextArea.setBounds(startX, startY, width, height);
+        frame.add(newTextArea);
         return newTextArea;
     }
 
@@ -59,34 +60,43 @@ public class Swingy implements ActionListener {
 
     Swingy() {
         frame = new Frame("This is my test frame");
-        left = createButton("left", 10, 200, 150, 30);
-        right = createButton("right", 350, 200, 150, 30);
-        up = createButton("up", 180, 100, 150, 30);
-        down = createButton("down", 180, 300, 150, 30);
-        fight = createButton("fight", 70, 400, 150, 30);
-        run = createButton("run", 270, 400, 150, 30);
-        fightResult = createButton("", 180, 200, 150, 30);
+        // left = createButton("left", 10, 200, 150, 30);
+        // right = createButton("right", 350, 200, 150, 30);
+        // up = createButton("up", 180, 100, 150, 30);
+        // down = createButton("down", 180, 300, 150, 30);
+        // fight = createButton("fight", 70, 400, 150, 30);
+        // run = createButton("run", 270, 400, 150, 30);
+        // fightResult = createButton("", 180, 200, 150, 30);
+        Button test = createButton("test", 100, 100, 200, 20);
+
+        TextArea txt = createTextArea("hello", 50, 300, 500, 100);
         
-        fightResult.setEnabled(false);
-        frame.setSize(500, 500);
+        // fightResult.setEnabled(false);
+        frame.setSize(1000, 800);
         frame.setLayout(null);
         frame.setVisible(true);
+
+        while(1) {
+            if ()
+        }
     }
 
     public void actionPerformed(ActionEvent act) {
-        switch (act.getActionCommand()) {
-            case "left" :
-            case "right" :
-            case "up" :
-            case "down" :
-                movePlayer(act.getActionCommand());
-                break ;
-            case "fight" :
-                simulateFight();
-                break ;
-            default :
-                break ;
-        }
+
+        // switch (act.getActionCommand()) {
+        //     case "left" :
+        //     case "right" :
+        //     case "up" :
+        //     case "down" :
+        //         movePlayer(act.getActionCommand());
+        //         break ;
+        //     case "fight" :
+        //         simulateFight();
+        //         break ;
+        //     default :
+        //         break ;
+       //\
+     }
     }
 
     public static void main(String args[]) {

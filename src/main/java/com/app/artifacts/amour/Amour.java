@@ -1,4 +1,6 @@
-package  com.app.artifacts.amour;
+package com.app.artifacts.amour;
+
+import java.util.*;
 
 public class Amour {
     private int level;
@@ -6,8 +8,10 @@ public class Amour {
     protected String type;
 
     Amour(int points, int playerLevel, String typ) {
-        this.defence =  (playerLevel - 1) * 30 + points;
-        this.level = (this.defence / 30) + 1;
+        Random rand = new Random();
+        points = rand.nextInt(playerLevel * 10);
+        this.defence =  (playerLevel - 1) * 10 + points;
+        this.level = (this.defence / 10) + 1;
         this.type = typ;
     }
 
@@ -25,7 +29,8 @@ public class Amour {
     }
 
     public void printName() {
-        System.out.println("Amour :-> " + this.type + " :: defence :-> +" + this.getDefence());
+        System.out.println("Amour    :-> " + this.type );
+        System.out.println("Defence  :-> " + this.getDefence());
     }
 
     public String getType() {

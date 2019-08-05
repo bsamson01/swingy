@@ -1,11 +1,15 @@
 package  com.app.artifacts.weapons;
 
+import java.util.*;
+
 public class Weapon {
     private int level;
     private int stregnth;
     protected String type;
 
     Weapon(int points, int playerLevel, String typ) {
+        Random rand = new Random();
+        points = rand.nextInt(playerLevel * 10);
         this.stregnth =  (playerLevel - 1) * 10 + points;
         this.level = (this.stregnth / 10) + 1;
         this.type = typ;
@@ -24,8 +28,9 @@ public class Weapon {
         return (this.stregnth);
     }
 
-    public void printName() {
-        System.out.println("Weapon :-> " + this.type + " :: Damage :-> +" + this.getDamage());
+    public void printInfo() {
+        System.out.println("|  Weapon : " + this.type );
+        System.out.println("|  Damage : " + this.getDamage());
     }
 
     public String getType() {

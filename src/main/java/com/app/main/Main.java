@@ -5,18 +5,10 @@ import com.app.readWrite.*;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Do you want to make a new hero? (y/n): ");
-        if (MyReader.readConsole().equals("y")) {
-            System.out.println("Give your hero a name : ");
-            String name = MyReader.readConsole();
-            if (name != null) {
-                Hero myHero = new Hero(name);
-                Game game = new Game(myHero);
-                game.play();
-            }
-        }
-        else {
-            System.out.println("Swingy now quiting");
-        }
+        Hero hero = new Hero("Brandon");
+        Game game = new Game();
+        game.setHero(hero);
+        while (true)
+            game.menu();
     }
 }
