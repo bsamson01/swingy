@@ -19,7 +19,7 @@ public  class   TestWriter {
         }
         catch (Exception e)
         {
-            System.err.println("Error");
+            System.err.println("Error file does not exist and could not be created");
         }
     }
 

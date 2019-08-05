@@ -15,6 +15,12 @@ public class Amour {
         this.type = typ;
     }
 
+    public Amour(String type, int def) {
+        this.type = type;
+        this.defence = def;
+        this.level = (this.defence / 10) + 1;
+    }
+
     public void upgrade(int points) {
         this.defence += points;
         this.level = (this.defence / 30) + 1;

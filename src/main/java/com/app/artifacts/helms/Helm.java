@@ -15,6 +15,12 @@ public class Helm {
         this.type = typ;
     }
 
+    public Helm(String typ, int health) {
+        this.type = typ;
+        this.hp = health;
+        this.level = (this.hp / 20) + 1;
+    }
+
     public void upgrade(int points) {
         this.hp += points;
         this.level = (this.hp / 10) + 1;

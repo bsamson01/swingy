@@ -70,7 +70,7 @@
           <configuration>
             <archive>
               <manifest>
-                <mainClass>com.app.main.Swingy</mainClass>
+                <mainClass>com.app.main.Main</mainClass>
               </manifest>
             </archive>
           </configuration>

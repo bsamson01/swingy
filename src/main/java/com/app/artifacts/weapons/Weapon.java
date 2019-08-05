@@ -15,6 +15,12 @@ public class Weapon {
         this.type = typ;
     }
 
+    public Weapon(String type, int power) {
+        this.type = type;
+        this.stregnth = power;
+        this.level = (this.stregnth / 10) + 1;
+    }
+
     public void upgrade(int points) {
         this.stregnth += points;
         this.level = (this.stregnth / 10) + 1;

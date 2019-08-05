@@ -1,8 +1,2 @@
-2019/07/31 06:17:43 | brandon | 0 | 1 | 0 | 1 | 1 | 100 | BowAndArrow | 1 | Guardians Shield | 1 | KingdomsPride | 1
-2019/07/31 06:24:15 | brandon | 0 | 1 | 0 | 1 | 1 | 100 | BowAndArrow | 1 | Guardians Shield | 1 | KingdomsPride | 1
-2019/07/31 06:42:54 | Brandon | 0 | 1 | 0 | 1 | 1 | 100 | BowAndArrow | 1 | Guardians Shield | 1 | KingdomsPride | 1
-2019/07/31 06:45:34 | Brandon | 0 | 1 | 0 | 1 | 1 | 100 | BowAndArrow | 1 | Guardians Shield | 1 | KingdomsPride | 1
-2019/07/31 06:46:26 | brandon | 0 | 1 | 0 | 1 | 1 | 100 | BowAndArrow | 1 | Guardians Shield | 1 | KingdomsPride | 1
-2019/07/31 06:47:05 | Brandon | 0 | 1 | 0 | 1 | 1 | 100 | BowAndArrow | 1 | Guardians Shield | 1 | KingdomsPride | 1
-2019/07/31 06:52:02 | Brandon | 0 | 1 | 0 | 1 | 1 | 100 | BowAndArrow | 1 | Guardians Shield | 1 | KingdomsPride | 1
-2019/07/31 06:54:54 | j | 0 | 1 | 0 | 1 | 1 | 100 | BowAndArrow | 1 | Guardians Shield | 1 | KingdomsPride | 1
+2019/08/05 13:59:49@Brandon@0@1@0@10@20@100@BowAndArrow@0@Guardians Shield@9@KingdomsPride@1@Seilie
+2019/08/05 14:01:49@test@600@1@2@20@10@100@Stormbreaker@6@Light Shield@7@Blazeguard@3@Gunman

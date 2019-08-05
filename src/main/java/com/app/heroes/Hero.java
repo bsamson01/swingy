@@ -11,6 +11,7 @@ public  class Hero {
     private Coordinates coordinates;
     private int         coins;
     private int         maxExp;
+    private String      type;
 
     public Hero(String nme) {
         this.name = nme;
@@ -22,20 +23,43 @@ public  class Hero {
         combineStats();
     }
 
-    public Hero(String nme, int exp, Stats stats, Artifacts artifacts, int level) {
+    public Hero(String nme, String typ) {
+        this.type = typ;
+        this.name = nme;
+        this.experience = 0;
+        this.level = 1;
+        if (typ.compareToIgnoreCase("warlock") == 0)
+            this.stats = new Stats(15, 15, 100);
+        else if (type.compareToIgnoreCase("gunman") == 0)
+            this.stats = new Stats(20, 10, 100);
+        else
+            this.stats = new Stats(10, 20, 100);
+        this.artifacts = new Artifacts();
+        coordinates = new Coordinates(0, 0);
+        combineStats();
+    }
+
+    public Hero(String nme, int exp, int level, int coins, String type, Stats stats, Artifacts artifacts) {
+        this.type = type;
         this.name = nme;
         this.experience = exp;
         this.level = level;
         this.stats = stats;
         this.artifacts = artifacts;
+        this.coins = coins;
         this.coordinates = new Coordinates(0, 0);
         combineStats();
+    }
+
+    public String getType() {
+        return this.type;
     }
 
     public void printInfo() {
         System.out.println("----------------Hero Info-------------------------");
         System.out.println("| Name   : " + getName());
         System.out.println("| Exp    : " + getExp());
+        System.out.println("| Type   : " + getType());
         System.out.println("| Level  : " + getLevel());
         System.out.println("| Coins  : " + getCoins());
         System.out.println("|_________________Stats___________________________");
@@ -67,6 +91,10 @@ public  class Hero {
 
     public String getName() {
         return this.name;
+    }
+
+    public Stats getHeroStats() {
+        return this.stats;
     }
 
     public Stats getStats() {
