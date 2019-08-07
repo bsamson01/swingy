@@ -63,7 +63,10 @@ public class MyReader {
                     i++;
                 }
                 br.close();
-                return result;
+                String[] res = new String[i];
+                for (int x = 0; x < i; x++)
+                    res[x] = result[x];
+                return res;
             }
             catch (IOException e) {
                 e.printStackTrace();

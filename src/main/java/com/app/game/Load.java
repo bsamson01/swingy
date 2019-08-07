@@ -4,6 +4,10 @@ import com.app.readWrite.*;
 
 public class Load {
 
+    public static String[] loadNames() {
+        return MyReader.readFile("Game.txt");
+    }
+
     public static String[] load() {
         int i;
         String data[] = MyReader.readFile("Game.txt");

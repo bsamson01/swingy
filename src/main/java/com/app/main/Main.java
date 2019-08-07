@@ -5,9 +5,7 @@ public class Main {
     public static void main(String[] args) {
         if (args.length > 0) {
             if (args[0].compareToIgnoreCase("console") == 0 ||  args[0].compareToIgnoreCase("gui") == 0) {
-                Game game = new Game(args[0]);
-                while (true)
-                    game.menu();
+                new Swingy();
             }
             else
                 System.out.println("Unrecognized interface");

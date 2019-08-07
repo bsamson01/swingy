@@ -1,5 +1,6 @@
 com/app/heroes/Hero.class
 com/app/artifacts/Artifacts.class
+com/app/main/Swingy$MenuListener.class
 com/app/artifacts/helms/KingdomsPride.class
 com/app/debug/Debug.class
 com/app/game/Game.class
