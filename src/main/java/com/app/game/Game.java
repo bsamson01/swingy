@@ -21,8 +21,15 @@ public class Game {
     private String[] enemies = {"Darkwolf", "Downworlder", "Feral"};
     private Artifacts tmpArtifacts;
     private Boolean alive;
+    private String platform;
 
-    public Game() {}
+    public Game(String platform) {
+        this.platform = platform;
+    }
+
+    public String getPlatform() {
+        return this.platform;
+    }
 
     public void setHero(Hero player) {
         this.hero = player;
@@ -312,8 +319,11 @@ public class Game {
                 hero.printInfo();
             else if (val == 6)
                store();
-            else if (val == 7)
+            else if (val == 7) {
                 System.out.println("Quiting...");
+                sleep(500);
+                System.exit(0);
+            }
         }
     }
 
@@ -325,7 +335,6 @@ public class Game {
             cmd = MyReader.readConsole();
             if (cmd.compareToIgnoreCase("1") == 0) {
                 val = rand.nextInt(2) + 1;
-
                 if (val == 1) {
                     tmpArtifacts.setWeapon(Artifacts.generateWeapon(hero.getLevel()));
                     tmpArtifacts.getWeapon().printInfo();

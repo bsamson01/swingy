@@ -1,11 +1,18 @@
 package com.app.main;
 import com.app.game.*;
-import com.app.readWrite.*;
 
 public class Main {
     public static void main(String[] args) {
-        Game game = new Game();
-        while (true)
-            game.menu();
+        if (args.length > 0) {
+            if (args[0].compareToIgnoreCase("console") == 0 ||  args[0].compareToIgnoreCase("gui") == 0) {
+                Game game = new Game(args[0]);
+                while (true)
+                    game.menu();
+            }
+            else
+                System.out.println("Unrecognized interface");
+        }
+        else
+            System.out.println("Please  specify weather to launch in gui or console");
     }
 }
