@@ -1,7 +1,6 @@
 package com.app.artifacts;
 import  com.app.artifacts.helms.*;
 import java.util.*;
-import javax.lang.model.util.ElementScanner6;
 import com.app.artifacts.amour.*;
 import  com.app.artifacts.weapons.*;
 import com.app.debug.Debug;

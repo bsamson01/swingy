@@ -7,14 +7,15 @@ import com.app.game.*;
 
 public class Swingy extends JFrame {
     private static final long serialVersionUID = 1L;
+    private Game game;
     private JComboBox dropDown;
 
-    public Swingy() {
+    public Swingy(Game gme) {
         super("Swingy");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setBounds(400, 300, 500, 300);
         setResizable(true);
-        mainMenu();
+        this.game = gme;
     }
 
     private class MenuListener implements ActionListener {
@@ -27,6 +28,8 @@ public class Swingy extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (btnVal == 5)
                 store();
+            else if (btnVal == 4)
+                showStats();
             else if (btnVal == 10)
                 mainMenu();
             else if (btnVal == 6)
@@ -34,9 +37,9 @@ public class Swingy extends JFrame {
             else if (btnVal == 3)
                 selectPlayer();
             else if (btnVal == 42)
-                System.out.println(dropDown.getSelectedIndex());
+                game.loadHero(dropDown.getSelectedIndex());
         }
-    }
+    } 
 
     public void mainMenu() {
 
@@ -60,6 +63,26 @@ public class Swingy extends JFrame {
         menuPanel.setBackground(Color.DARK_GRAY);
         menuPanel.setVisible(true);
         setVisible(true);
+    }
+
+    public void showStats() {
+        if (game.getHero() != null) {
+            JPanel statsPanel = new JPanel();
+            statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
+            JLabel heroName = new  JLabel(game.getHero().getName());
+            JLabel heroClass = new JLabel(game.getHero().getType());
+            JButton backtoMenu = new JButton("Main Menu");
+
+            addBtnComp(backtoMenu, statsPanel, Color.RED,100, 100, 100, 50, 10);
+            setContentPane(statsPanel);
+            statsPanel.add(heroName);
+            statsPanel.add(heroClass);
+            statsPanel.setBackground(Color.DARK_GRAY);
+            statsPanel.setVisible(true);
+            setVisible(true);
+        }
+        else
+            mainMenu();
     }
 
     public void store() {

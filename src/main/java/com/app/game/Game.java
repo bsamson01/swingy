@@ -8,6 +8,7 @@ import com.app.artifacts.weapons.*;
 import com.app.debug.*;
 import com.app.enemies.*;
 import com.app.heroes.*;
+import com.app.main.*;
 import com.app.readWrite.*;
 
 
@@ -22,9 +23,16 @@ public class Game {
     private Artifacts tmpArtifacts;
     private Boolean alive;
     private String platform;
+    private Swingy swingy = null;
+    private Console console = null;
 
     public Game(String platform) {
-        this.platform = platform;
+        if (platform.compareToIgnoreCase("gui") == 0) {
+            swingy = new Swingy(this);
+        }
+        else
+            console = new Console(this);
+        menu();
     }
 
     public String getPlatform() {
@@ -39,6 +47,10 @@ public class Game {
         intitalizeMap();
         this.alive = true;
         this.inBounds = 1;
+    }
+
+    public Hero getHero() {
+        return this.hero;
     }
 
     private void intitalizeMap() {
@@ -97,7 +109,7 @@ public class Game {
                 if (inBounds == 0)
                 {
                     System.out.println("Congratulations you have reached the end of the map.");
-                    PrintStats();
+                    console.PrintStats();
                     System.out.println("Do you want to load a new map? (y/n)");
                     cmd = MyReader.readConsole();
                     if (cmd.toLowerCase().compareToIgnoreCase("y") == 0 || cmd.toLowerCase().compareToIgnoreCase("yes") == 0)
@@ -145,16 +157,6 @@ public class Game {
                 System.out.println("Error: Input not an Integer");
         }
         setHero(newHero);
-    }
-
-    private void PrintStats() {
-        System.out.println("--------------------------------------------");
-        System.out.println("|  Hero name  : " + hero.getName());
-        System.out.println("|  Hero Level : " + hero.getLevel());
-        System.out.println("|  Hero Exp   : " + hero.getExp());
-        System.out.println("|  Hero Hp    : " + hero.getStats().getHp());
-        System.out.println("|  Hero coins : " + hero.getCoins());
-        System.out.println("--------------------------------------------");
     }
 
     private void store() {
@@ -292,18 +294,15 @@ public class Game {
         }
     }
 
-    public void menu() {
-        System.out.println("------------Main menu------------");
-        System.out.println("|       Select an option        |");
-        System.out.println("| 1. Continue                   |");
-        System.out.println("| 2. New Game                   |");
-        System.out.println("| 3. Save Progress              |");
-        System.out.println("| 4. Load Another Hero          |");
-        System.out.println("| 5. Hero Info                  |");
-        System.out.println("| 6. Store                      |");
-        System.out.println("| 7. Exit                       |");
-        System.out.println("-------------Swingy--------------");
-        String cmd = MyReader.readConsole();
+    public void menu(){
+        if (console != null)
+            while (true)
+                console.menu();
+        else
+            swingy.mainMenu();
+    }
+
+    public void menuCommand(String cmd) {
         if (Debug.isInteger(cmd)) {
             int val;
             val = Integer.parseInt(cmd);
@@ -314,7 +313,7 @@ public class Game {
             else if (val == 3)
                 save();
             else if (val == 4)
-                load();
+                console.load();
             else if (val == 5 && hero != null)
                 hero.printInfo();
             else if (val == 6)
@@ -325,6 +324,8 @@ public class Game {
                 System.exit(0);
             }
         }
+        else
+            console.menu();
     }
 
     private void pickItem() {
@@ -416,8 +417,8 @@ public class Game {
             System.out.println("The is no hero in the current game, Please create a new one");
     }
 
-    private void load() {
-        String data[] = Load.load();
+    public void loadHero(int lineNumber) {
+        String data[] = MyReader.readFileLine("Game.txt", lineNumber + 1).split("@", 20);
 
         if (data != null) {
             Artifacts loaddedArt = new Artifacts("loaded");
@@ -426,10 +427,6 @@ public class Game {
             loaddedArt.setHelm(new Helm(data[12], Integer.parseInt(data[13])));
             Stats sts = new Stats(Integer.parseInt(data[5]), Integer.parseInt(data[6]), Integer.parseInt(data[7]));
             this.hero = new Hero(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4]), data[14], sts, loaddedArt);
-            sleep(1500);
-            System.out.println("hero saved");
         }
-        else
-            System.out.println("No heroes saved, please create a new one");
     }
 }

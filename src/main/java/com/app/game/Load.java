@@ -10,11 +10,11 @@ public class Load {
 
     public static String[] load() {
         int i;
-        String data[] = MyReader.readFile("Game.txt");
+        String data[] = loadNames();
         if (data != null) {
             System.out.println("Please select a hero id to load : ");
             String[] info;
-            for(i = 0; data[i] != null; i++) {
+            for(i = 0; i < data.length; i++) {
                 info = data[i].split("@",  10);
                 System.out.println((i + 1) + ". " + info[1] + " on " + info[0] + "             " + info[8]);
             }

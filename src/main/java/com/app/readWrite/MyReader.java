@@ -2,8 +2,7 @@ package com.app.readWrite;
 import java.io.*;
 
 public class MyReader {
-    public static String readConsole()
-    {
+    public static String readConsole() {
         BufferedReader reader =  new BufferedReader(new InputStreamReader(System.in));
         try {
             return reader.readLine();
@@ -11,6 +10,25 @@ public class MyReader {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static int getLines() {
+        if (checkForFile()) {
+            int i = 0;
+            File file = new File("Game.txt");
+            BufferedReader br;
+            try {
+                br = new BufferedReader(new FileReader(file));
+                for (i = 0; br.readLine() != null; i++){}
+                br.close();
+                System.out.println(i);
+                return i;
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return 0;
     }
 
     private static Boolean checkForFile()
