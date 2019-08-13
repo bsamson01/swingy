@@ -23,14 +23,32 @@ public  class Hero {
         combineStats();
     }
 
+    public Hero(String nme, String clss, int wpn, int hlm, int amr) {
+        this.name = nme;
+        this.experience = 0;
+        this.level = 1;
+        this.type = clss.toLowerCase();
+        if (clss.compareToIgnoreCase("warlock") == 0)
+            this.stats = new Stats(15, 15, 100);
+        else if (clss.compareToIgnoreCase("gunman") == 0)
+            this.stats = new Stats(20, 10, 100);
+        else
+            this.stats = new Stats(10, 20, 100);
+        this.artifacts = new Artifacts("new hero");
+        this.artifacts.setWeapon(Artifacts.makeWeapon(wpn));
+        this.artifacts.setHelm(Artifacts.makeHelm(hlm));
+        this.artifacts.setAmour(Artifacts.makeAmour(amr));
+        this.coordinates = new Coordinates(0, 0);
+    }
+
     public Hero(String nme, String typ) {
-        this.type = typ;
+        this.type = typ.toLowerCase();
         this.name = nme;
         this.experience = 0;
         this.level = 1;
         if (typ.compareToIgnoreCase("warlock") == 0)
             this.stats = new Stats(15, 15, 100);
-        else if (type.compareToIgnoreCase("gunman") == 0)
+        else if (typ.compareToIgnoreCase("gunman") == 0)
             this.stats = new Stats(20, 10, 100);
         else
             this.stats = new Stats(10, 20, 100);
@@ -53,25 +71,6 @@ public  class Hero {
 
     public String getType() {
         return this.type;
-    }
-
-    public void printInfo() {
-        System.out.println("----------------Hero Info-------------------------");
-        System.out.println("| Name   : " + getName());
-        System.out.println("| Exp    : " + getExp());
-        System.out.println("| Type   : " + getType());
-        System.out.println("| Level  : " + getLevel());
-        System.out.println("| Coins  : " + getCoins());
-        System.out.println("|_________________Stats___________________________");
-        combineStats();
-        System.out.println("|            Attack   : " + stats.getAttack());
-        System.out.println("|            Defense  : " + stats.getDefense());
-        System.out.println("|            Hp       : " + stats.getHp());
-        System.out.println("|_______________Artifacts_________________________");
-        System.out.println("| Weapon : " + artifacts.getWeapon().getType() + " (damage = +"+artifacts.getWeapon().getDamage()+")");
-        System.out.println("| Amour  : " + artifacts.getAmour().getType() + " (protection = +"+artifacts.getAmour().getDefence()+")");
-        System.out.println("| Helm   : " + artifacts.getHelm().getType() + " (hitpoints = +"+artifacts.getHelm().getHp()+")");
-        System.out.println("--------------------------------------------------");
     }
 
     public void combineStats() {

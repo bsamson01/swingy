@@ -1,7 +1,7 @@
 package com.app.heroes;
 
 public class Seilie extends Hero {
-    public Seilie(String name) {
-        super(name, "Seilie");
+    public Seilie(String nme, int wpn, int hlm, int amr) {
+        super(nme, "seilie", wpn, hlm, amr);
     }
 }

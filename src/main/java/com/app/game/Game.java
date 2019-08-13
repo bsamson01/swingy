@@ -1,6 +1,9 @@
 package com.app.game;
 import java.text.*;
 import java.util.*;
+
+import javax.lang.model.util.ElementScanner6;
+
 import com.app.artifacts.*;
 import com.app.artifacts.amour.*;
 import com.app.artifacts.helms.*;
@@ -77,87 +80,84 @@ public class Game {
         hero.combineStats();
     }
 
-    public void printMap() {
-        for (int i = 0; i < mapSize; i++) {
-            for (int y = 0; y < mapSize; y++) {
-                if (map[i][y] == 1)
-                    System.out.print("*");
-                else if (map[i][y] == 2)
-                    System.out.print("H");
-                else
-                    System.out.print(".");
-            }
-            System.out.print("\n");
-        }
+    public int[][] getMap() {
+        return this.map;
+    }
+
+    public int getMapSize() {
+        return this.mapSize;
     }
 
     public void play() {
+
         if (this.hero != null) {
             this.alive = true;
             this.tmpArtifacts = new Artifacts("temp");
-            String cmd;
             remakeMap();
             while (alive) {
-                System.out.println("Please enter a direction you want to move");
-                cmd = MyReader.readConsole();
-                if (cmd.toLowerCase().compareToIgnoreCase("left") == 0 || cmd.toLowerCase().compareToIgnoreCase("right") == 0 || cmd.toLowerCase().compareToIgnoreCase("up") == 0 || cmd.toLowerCase().compareToIgnoreCase("down") == 0)
-                    move(cmd);
-                else if (cmd.toLowerCase().compareToIgnoreCase("quit") == 0)
-                    break ;
-                else
-                    System.out.println("Invalid input");
-                if (inBounds == 0)
-                {
-                    System.out.println("Congratulations you have reached the end of the map.");
-                    console.PrintStats();
-                    System.out.println("Do you want to load a new map? (y/n)");
-                    cmd = MyReader.readConsole();
-                    if (cmd.toLowerCase().compareToIgnoreCase("y") == 0 || cmd.toLowerCase().compareToIgnoreCase("yes") == 0)
-                        remakeMap();
+                if (console != null) {
+                    int val = console.getDirection();
+                    if (val != 0)
+                        move(val);
                     else
                         break ;
+
+                }
+                if (this.inBounds == 0) {
+                    if (console != null) {
+                        if (console.endOfMap())
+                            remakeMap();
+                        else
+                            break ;
+                    }
                 }
             }
         }
-        else
-            System.out.println("You need to create a hero first or load an existing one");
+        else {
+            if (console != null)
+                console.noHero();
+        }
     }
 
-    private void newGame() {
-        System.out.println("Are you sure? All progress will be lost. (y/n)");
-        String cmd = MyReader.readConsole();
-        if (cmd.compareToIgnoreCase("y") == 0)
-            makeHero();
-    }
-
-    private void makeHero() {
+    private void newHeroCreate(String name, String type, int weapon, int helm, int amour) {
         Hero newHero;
-        System.out.println("Enter hero name");
-        String name = MyReader.readConsole();
-        while (true) {
-            System.out.println("Which hero type would you want?\n1.Gunman\n2.Seilie\n3.Warlock");
-            String cmd = MyReader.readConsole();
-            if (Debug.isInteger(cmd)) {
-                if (Integer.parseInt(cmd) == 1) {
-                    newHero = new Gunman(name);
-                    break ;
-                }
-                else if (Integer.parseInt(cmd) == 2) {
-                    newHero = new Seilie(name);
-                    break ;
-                }
-                else if (Integer.parseInt(cmd) == 3) {
-                    newHero = new Warlock(name);
-                    break ;
-                }
-                else
-                    System.out.println("Error: Invalid input.");
-            }
-            else
-                System.out.println("Error: Input not an Integer");
-        }
+        if (type.compareToIgnoreCase("seilie") == 0)
+            newHero = new Seilie(name, weapon, helm, amour);
+        else if (type.compareToIgnoreCase("warlock") == 0)
+            newHero = new Warlock(name, weapon, helm, amour);
+        else
+            newHero = new Gunman(name, weapon, helm, amour);
         setHero(newHero);
     }
+
+    // private void makeHero() {
+    //     Hero newHero;
+    //     System.out.println("Enter hero name");
+    //     String name = MyReader.readConsole();
+    //     while (true) {
+    //         System.out.println("Which hero type would you want?\n1.Gunman\n2.Seilie\n3.Warlock");
+    //         String cmd = MyReader.readConsole();
+    //         if (Debug.isInteger(cmd)) {
+    //             if (Integer.parseInt(cmd) == 1) {
+    //                 newHero = new Gunman(name);
+    //                 break ;
+    //             }
+    //             else if (Integer.parseInt(cmd) == 2) {
+    //                 newHero = new Seilie(name);
+    //                 break ;
+    //             }
+    //             else if (Integer.parseInt(cmd) == 3) {
+    //                 newHero = new Warlock(name);
+    //                 break ;
+    //             }
+    //             else
+    //                 System.out.println("Error: Invalid input.");
+    //         }
+    //         else
+    //             System.out.println("Error: Input not an Integer");
+    //     }
+    //     setHero(newHero);
+    // }
 
     private void store() {
         if (hero != null && hero.getCoins() > 0) {
@@ -224,19 +224,19 @@ public class Game {
             System.out.println("Sorry, You do not have any coins to access the store");
     }
 
-    private void move(String direction) {
+    private void move(int direction) {
         int lat = hero.getCoordinates().getLatitude();
         int lng = hero.getCoordinates().getLongitude();
 
         map[lng][lat] = 0;
 
-        if (direction.compareToIgnoreCase("left") == 0)
+        if (direction == 4)
             hero.getCoordinates().moveLeft();
-        else if (direction.compareToIgnoreCase("right") == 0)
+        else if (direction == 2)
             hero.getCoordinates().moveRight();
-        else if (direction.compareToIgnoreCase("up") == 0)
+        else if (direction == 1)
             hero.getCoordinates().moveUp();
-        else if (direction.compareToIgnoreCase("down") == 0)
+        else if (direction == 3)
             hero.getCoordinates().moveDown();
         lat = hero.getCoordinates().getLatitude();
         lng = hero.getCoordinates().getLongitude();
@@ -260,11 +260,13 @@ public class Game {
                 damage = (int)(0.2 * hero.getStats().getAttack());
             if (rand.nextInt(8) == 4) {
                 enemy.getStats().reduceHp(damage * 3);
-                System.out.println("You hit " + enemy.getName() + " by " + damage * 3 + "(critical hit)");
+                if (console != null)
+                    console.enemyHit(damage, true);
             }
             else {
                 enemy.getStats().reduceHp(damage);
-                System.out.println("You hit " + enemy.getName() + " by " + damage);
+                if (console != null)
+                    console.enemyHit(damage, false);
             }
             sleep(300);
 
@@ -274,20 +276,24 @@ public class Game {
                     damage = (int)(0.4 *enemy.getStats().getAttack());
                 if (rand.nextInt(5) == 3) {
                     hero.getStats().reduceHp(damage * 5);
-                    System.out.println(enemy.getName() + " hit you by " + damage * 5 + "(critical hit)");
+                    if (console != null)
+                        console.heroHit(damage, true);
                 }
                 else {
                     hero.getStats().reduceHp(damage);
-                    System.out.println(enemy.getName() + " hit you by " + damage);
+                    if (console != null)
+                        console.heroHit(damage, false);
                 }
             }
         }
         if (hero.getStats().getHp() < 0) {
-            System.out.println(enemy.getName() + " killed you");
+            if (console != null)
+                console.heroKilled();
             this.alive = false;
         }
         else {
-            System.out.println("You slayed " + enemy.getName());
+            if (console != null)
+                console.enemyKilled();
             hero.gainExp(300 / hero.getLevel());
             hero.gainCoins(1 * hero.getLevel());
             pickItem();
@@ -309,18 +315,19 @@ public class Game {
             if (val == 1)
                 play();
             else if (val == 2)
-                newGame();
-            else if (val == 3)
+                console.newGame();
+            else if (val == 3) {
                 save();
+            }
             else if (val == 4)
                 console.load();
-            else if (val == 5 && hero != null)
-                hero.printInfo();
+            else if (val == 5 && hero != null) {
+                if (console != null)
+                    console.printHeroInfo();
+            }
             else if (val == 6)
                store();
             else if (val == 7) {
-                System.out.println("Quiting...");
-                sleep(500);
                 System.exit(0);
             }
         }
@@ -332,7 +339,7 @@ public class Game {
         int val;
         String cmd;
         if ((rand.nextInt(4) + 1) % 2 == 0) {
-            System.out.println(enemy.getName() + " dropped an item . Click 1 to inspect or any key to ignore");  
+            System.out.println(enemy.getName() + " dropped an item . Click 1 to inspect or any key to ignore");
             cmd = MyReader.readConsole();
             if (cmd.compareToIgnoreCase("1") == 0) {
                 val = rand.nextInt(2) + 1;
@@ -366,17 +373,24 @@ public class Game {
         }
     }
 
+    public Enemy getEnemy() {
+        return this.enemy;
+    }
+
     private void run() {
         if ((rand.nextInt(2) + 1) % 2 == 0) {
-                System.out.println("You successfully evaded " + enemy.getName());
+                if (console != null)
+                    console.evade();
                 hero.gainExp(100 / hero.getLevel());
         }
         else {
-            System.out.println(enemy.getName() + " hit you by " + enemy.getStats().getAttack() * 3 + " because you chicked out");
+            if (this.console != null)
+                console.failedRun();
             hero.getStats().reduceHp(enemy.getStats().getAttack() * 3);
         }
         if (hero.getStats().getHp() < 0) {
-            System.out.println(enemy.getName() + " killed you");
+            if (console != null)
+                console.heroKilled();
             this.alive = false;
         }
     }
@@ -392,7 +406,8 @@ public class Game {
     private void encounter() {
         int type = rand.nextInt(3 - 1) + 1;
         enemy = new Enemy(enemies[type], hero.getLevel());
-        System.out.println("You met "+ enemy.getName() +". Fight or run? ");
+        if (this.console != null)
+            console.metEnemy();
         String act = MyReader.readConsole();
         if (act.toLowerCase().compareToIgnoreCase("fight") == 0)
             fight();
@@ -400,7 +415,7 @@ public class Game {
             run();
     }
 
-    private void save() {
+    public Boolean save() {
         if (this.hero != null) {
             String result;
             String date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -412,9 +427,9 @@ public class Game {
                     + hero.getArtifacts().getHelm().getType() + "@" + hero.getArtifacts().getHelm().getHp() + "@"
                     + hero.getType();
             TestWriter.write(result);
+            return true;
         }
-        else
-            System.out.println("The is no hero in the current game, Please create a new one");
+        return false;
     }
 
     public void loadHero(int lineNumber) {

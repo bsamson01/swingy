@@ -109,38 +109,59 @@ public  class Artifacts {
     }
 
     public static Weapon  generateWeapon(int playerLevel) {
-        Weapon wp;
         int val = rand.nextInt(2) + 1;
         if (val == 1)
-            wp = new StormBreaker(1, playerLevel);
+            return new StormBreaker(1, playerLevel);
         else if (val == 2)
-            wp = new BowAndArrow(1, playerLevel);
+            return new BowAndArrow(1, playerLevel);
         else
-            wp = new Gun(1, playerLevel);
-        return (wp);
+            return new Gun(1, playerLevel);
     }
 
     public static Amour generateAmour(int playerLevel) {
-        Amour amr;
         int val = rand.nextInt(2) + 1;
         if (val == 1)
-            amr = new AntiqueBlockade(1, playerLevel);
+            return new AntiqueBlockade(1, playerLevel);
         else if (val == 2)
-            amr = new GuardiansShield(1, playerLevel);
+            return new GuardiansShield(1, playerLevel);
         else
-            amr = new LightShield(1, playerLevel);
-        return amr;
+            return new LightShield(1, playerLevel);
     }
 
     public static Helm generateHelm(int playerLevel) {
-        Helm hlm;
         int val = rand.nextInt(2) + 1;
         if (val == 1)
-            hlm = new ChampionsHeadguard(1, playerLevel);
+            return new ChampionsHeadguard(1, playerLevel);
         else if (val == 2)
-            hlm = new KingdomsPride(1, playerLevel);
+            return new KingdomsPride(1, playerLevel);
         else
-            hlm = new Blazeguard(1, playerLevel);
-        return hlm;
-    } 
+            return new Blazeguard(1, playerLevel);
+    }
+
+    public static Helm makeHelm(int val) {
+        if (val == 1)
+            return new ChampionsHeadguard(1, 1);
+        else if (val == 2)
+            return new KingdomsPride(1, 1);
+        else
+            return new Blazeguard(1, 1);
+    }
+
+    public static Amour makeAmour(int val) {
+        if (val == 1)
+            return new AntiqueBlockade(1, 1);
+        else if (val == 2)
+            return new GuardiansShield(1, 1);
+        else
+            return new LightShield(1, 1);
+    }
+
+    public static Weapon  makeWeapon(int val) {
+        if (val == 1)
+            return new StormBreaker(1, 1);
+        else if (val == 2)
+            return new BowAndArrow(1, 1);
+        else
+            return new Gun(1, 1);
+    }
 }
