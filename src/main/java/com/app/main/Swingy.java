@@ -3,12 +3,19 @@ package com.app.main;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.*;
+
 import com.app.game.*;
 
 public class Swingy extends JFrame {
     private static final long serialVersionUID = 1L;
     private Game game;
     private JComboBox<String> dropDown;
+    JComboBox<String> heroTypes;
+    JComboBox<String> heroWeapons;
+    JComboBox<String> heroHelms;
+    JComboBox<String> heroAmour;
+    JTextField heroName;
 
     public Swingy(Game gme) {
         super("Swingy");
@@ -43,12 +50,12 @@ public class Swingy extends JFrame {
             else if (btnVal == 42)
                 game.loadHero(dropDown.getSelectedIndex());
             else if (btnVal == 20)
-                System.out.println("Test heor");
+                createHero();
         }
     }
 
     public void newGame() {
-        String[] heroClasses =  {"Seilie", "Warlock", "Gunman"};
+        String[] heroClasses =  {"Gunman", "Seilie", "Warlock"};
         String[] Weapons = {"StormBreaker","Bow And Arrow", "Gun"};
         String[] Helms = {"ChampionsHeadguard","Kingdoms's Pride","Blazeguard"};
         String[] Amour = {"Antique Blockade", "Guardian's Shield", "Light Shield"};
@@ -60,11 +67,11 @@ public class Swingy extends JFrame {
         JLabel amourLabel = new JLabel("Select hero amour");
         JButton backtoMenu = new JButton("Main Menu");
         JButton createHero = new JButton("Create Hero");
-        JTextField heroName = new JTextField();
-        JComboBox<String> heroTypes = new JComboBox<>(heroClasses);
-        JComboBox<String> heroWeapons = new JComboBox<>(Weapons);
-        JComboBox<String> heroHelms = new JComboBox<>(Helms);
-        JComboBox<String> heroAmour = new JComboBox<>(Amour);
+        this.heroName = new JTextField();
+        this.heroTypes = new JComboBox<>(heroClasses);
+        this.heroWeapons = new JComboBox<>(Weapons);
+        this.heroHelms = new JComboBox<>(Helms);
+        this.heroAmour = new JComboBox<>(Amour);
 
         newGame.setLayout(new BoxLayout(newGame, BoxLayout.Y_AXIS));
         heroName.setMaximumSize(new Dimension(400, 80));
@@ -93,6 +100,35 @@ public class Swingy extends JFrame {
         setVisible(true);
     }
 
+    private void createHero() {
+        if (heroName.getText().trim().equals(""))
+            displayMessages("Hero Name cannot be empty", false);
+        else {
+            game.newHeroCreate(heroName.getText().trim(), heroTypes.getSelectedIndex() + 1, heroWeapons.getSelectedIndex() + 1, heroHelms.getSelectedIndex() + 1, heroAmour.getSelectedIndex() + 1);
+            displayMessages("Hero " + game.getHero().getName() + " sucessfully created", true);
+        }
+    }
+
+    private void displayMessages(String message, Boolean success) {
+
+        JPanel messagePanel = new JPanel();
+        JButton backtoMenu = new JButton("Main Menu");
+        JLabel msg = new JLabel(message);
+
+        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+        if (success)
+            msg.setForeground(Color.GREEN);
+        else
+            msg.setForeground(Color.RED);
+        messagePanel.add(msg);
+        addBtnComp(backtoMenu, messagePanel, Color.RED,100, 100, 100, 50, 10);
+
+        setContentPane(messagePanel);
+        messagePanel.setBackground(Color.DARK_GRAY);
+        messagePanel.setVisible(true);
+        setVisible(true);
+    }
+
     public void mainMenu() {
 
         JPanel menuPanel = new JPanel();
@@ -113,6 +149,13 @@ public class Swingy extends JFrame {
         addBtnComp(store, menuPanel, Color.BLUE, 100, 210, 100, 50, 5);
         addBtnComp(exit, menuPanel, Color.BLUE, 100, 260, 100, 50, 6);
 
+        if (game.getHero() == null) {
+            cntie.setEnabled(false);
+            saveHero.setEnabled(false);
+            heroStats.setEnabled(false);
+            store.setEnabled(false);
+        }
+
         setContentPane(menuPanel);
         menuPanel.setBackground(Color.DARK_GRAY);
         menuPanel.setVisible(true);
@@ -120,42 +163,80 @@ public class Swingy extends JFrame {
     }
 
     public void showStats() {
-        if (game.getHero() != null) {
-            JPanel statsPanel = new JPanel();
-            statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
-            JLabel heroName = new  JLabel(game.getHero().getName());
-            JLabel heroClass = new JLabel(game.getHero().getType());
-            JButton backtoMenu = new JButton("Main Menu");
+        JPanel statsPanel = new JPanel();
+        statsPanel.setLayout(new GridLayout(0, 2));
+        JLabel heroName = new  JLabel(game.getHero().getName());
+        JLabel heroClass = new JLabel(game.getHero().getType());
+        JLabel heroExp = new JLabel(String.valueOf(game.getHero().getExp()));
+        JLabel heroLevel = new JLabel(String.valueOf(game.getHero().getLevel()));
+        JLabel heroCoins = new JLabel(String.valueOf(game.getHero().getCoins()));
+        JLabel heroAttack = new JLabel(String.valueOf(game.getHero().getHeroStats().getAttack()));
+        JLabel heroDef = new JLabel(String.valueOf(game.getHero().getHeroStats().getDefense()));
+        JLabel heroHp = new JLabel(String.valueOf(game.getHero().getHeroStats().getHp()));
+        JLabel heroWpn = new JLabel(game.heroWeapon().getType() + " (damage = +" + game.heroWeapon().getDamage() + ")");
+        JLabel heroHlm = new JLabel(game.heroHelm().getType() + " (hitpoints = +" + game.heroHelm().getHp() + ")");
+        JLabel heroAmr = new JLabel(game.heroAmour().getType() + " (defence = +" + game.heroAmour().getDefence() + ")");
+        JButton backtoMenu = new JButton("Main Menu");
 
-            addBtnComp(backtoMenu, statsPanel, Color.RED,100, 100, 100, 50, 10);
-            setContentPane(statsPanel);
-            statsPanel.add(heroName);
-            statsPanel.add(heroClass);
-            statsPanel.setBackground(Color.DARK_GRAY);
-            statsPanel.setVisible(true);
-            setVisible(true);
-        }
-        else
-            mainMenu();
+        statsPanel.add(setLabelBorder("Hero name", 0, 50, 0, 0));
+        statsPanel.add(heroName);
+        statsPanel.add(setLabelBorder("Hero Class", 0, 50, 0, 0));
+        statsPanel.add(heroClass);
+        statsPanel.add(setLabelBorder("Hero Exp", 0, 50, 0, 0));
+        statsPanel.add(heroExp);
+        statsPanel.add(setLabelBorder("Hero Level", 0, 50, 0, 0));
+        statsPanel.add(heroLevel);
+        statsPanel.add(setLabelBorder("Hero Coins", 0, 50, 0, 0));
+        statsPanel.add(heroCoins);
+        statsPanel.add(setLabelBorder("Hero Attack", 0, 50, 0, 0));
+        statsPanel.add(heroAttack);
+        statsPanel.add(setLabelBorder("Hero Defence", 0, 50, 0, 0));
+        statsPanel.add(heroDef);
+        statsPanel.add(setLabelBorder("Hero HP", 0, 50, 0, 0));
+        statsPanel.add(heroHp);
+        statsPanel.add(setLabelBorder("Hero Weapon", 0, 50, 0, 0));
+        statsPanel.add(heroWpn);
+        statsPanel.add(setLabelBorder("Hero Amour", 0, 50, 0, 0));
+        statsPanel.add(heroAmr);
+        statsPanel.add(setLabelBorder("Hero Helm", 0, 50, 0, 0));
+        statsPanel.add(heroHlm);
+
+
+        addBtnComp(backtoMenu, statsPanel, Color.RED,100, 100, 100, 50, 10);
+        statsPanel.setBorder(new EmptyBorder(0, 10, 0, 0));
+        setContentPane(statsPanel);
+        statsPanel.setBackground(Color.DARK_GRAY);
+        statsPanel.setVisible(true);
+        setVisible(true);
+    }
+
+    private JLabel setLabelBorder(String name, int up, int left, int down, int right) {
+        JLabel label = new JLabel(name);
+        label.setBorder(new EmptyBorder(up, left, down, right));
+        return label;
     }
 
     public void store() {
-        JPanel storePanel = new JPanel();
-        storePanel.setLayout(new BoxLayout(storePanel, BoxLayout.Y_AXIS));
-        JButton upgradeWpn = new JButton("Upgrade Weapon");
-        JButton upgradeAmr = new JButton("Upgrade Amour");
-        JButton upgradeHlm = new JButton("Upgrade Helm");
-        JButton backtoMenu = new JButton("Main Menu");
+        if (game.getHero().getCoins() > 0) {
+            JPanel storePanel = new JPanel();
+            storePanel.setLayout(new BoxLayout(storePanel, BoxLayout.Y_AXIS));
+            JButton upgradeWpn = new JButton("Upgrade Weapon");
+            JButton upgradeAmr = new JButton("Upgrade Amour");
+            JButton upgradeHlm = new JButton("Upgrade Helm");
+            JButton backtoMenu = new JButton("Main Menu");
 
-        addBtnComp(upgradeWpn, storePanel, Color.RED,100, 100, 200, 50, 7);
-        addBtnComp(upgradeAmr, storePanel, Color.RED,100, 100, 100, 50, 8);
-        addBtnComp(upgradeHlm, storePanel, Color.RED,100, 100, 100, 50, 9);
-        addBtnComp(backtoMenu, storePanel, Color.RED,100, 100, 100, 50, 10);
+            addBtnComp(upgradeWpn, storePanel, Color.RED,100, 100, 200, 50, 7);
+            addBtnComp(upgradeAmr, storePanel, Color.RED,100, 100, 100, 50, 8);
+            addBtnComp(upgradeHlm, storePanel, Color.RED,100, 100, 100, 50, 9);
+            addBtnComp(backtoMenu, storePanel, Color.RED,100, 100, 100, 50, 10);
 
-        setContentPane(storePanel);
-        storePanel.setBackground(Color.DARK_GRAY);
-        storePanel.setVisible(true);
-        setVisible(true);
+            setContentPane(storePanel);
+            storePanel.setBackground(Color.DARK_GRAY);
+            storePanel.setVisible(true);
+            setVisible(true);
+        }
+        else
+            displayMessages("You currently have insufficient coins to access the store", false);
     }
 
     public void selectPlayer() {

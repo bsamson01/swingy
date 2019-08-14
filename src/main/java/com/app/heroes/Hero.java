@@ -13,20 +13,11 @@ public  class Hero {
     private int         maxExp;
     private String      type;
 
-    public Hero(String nme) {
-        this.name = nme;
-        this.experience = 0;
-        this.level = 1;
-        this.stats = new Stats(20, 10, 100);
-        this.artifacts = new Artifacts();
-        coordinates = new Coordinates(0, 0);
-        combineStats();
-    }
-
     public Hero(String nme, String clss, int wpn, int hlm, int amr) {
         this.name = nme;
         this.experience = 0;
         this.level = 1;
+        this.coins = 0;
         this.type = clss.toLowerCase();
         if (clss.compareToIgnoreCase("warlock") == 0)
             this.stats = new Stats(15, 15, 100);
@@ -39,21 +30,6 @@ public  class Hero {
         this.artifacts.setHelm(Artifacts.makeHelm(hlm));
         this.artifacts.setAmour(Artifacts.makeAmour(amr));
         this.coordinates = new Coordinates(0, 0);
-    }
-
-    public Hero(String nme, String typ) {
-        this.type = typ.toLowerCase();
-        this.name = nme;
-        this.experience = 0;
-        this.level = 1;
-        if (typ.compareToIgnoreCase("warlock") == 0)
-            this.stats = new Stats(15, 15, 100);
-        else if (typ.compareToIgnoreCase("gunman") == 0)
-            this.stats = new Stats(20, 10, 100);
-        else
-            this.stats = new Stats(10, 20, 100);
-        this.artifacts = new Artifacts();
-        coordinates = new Coordinates(0, 0);
         combineStats();
     }
 
@@ -117,8 +93,7 @@ public  class Hero {
         int att = (int)(stats.getAttack() * 1.3);
         int def = (int)(stats.getDefense() * 1.3);
         int health = (int)(stats.getHp() * 1.5); 
-        stats = new Stats(att, def, health);
-        System.out.println("Congratulations you have leveled up to level " + this.level);
+        this.stats = new Stats(att, def, health);
     }
 
     public void gainCoins(int cn) {

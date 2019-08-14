@@ -41,11 +41,12 @@ public class Console {
             else
                 break;
         }
+        name = cmd;
         type = selectHero();
         weapon = selectWeapon();
         helm = selectHelm();
         amour = selectAmour();
-
+        game.newHeroCreate(name, type, weapon, helm, amour);
     }
 
     private int selectHero() {
@@ -102,17 +103,17 @@ public class Console {
     private int selectAmour() {
         String cmd;
         while (true) {
-            System.out.println("Which weapon would you like?\n1. StormBreaker\n2. Bow And Arrow\n3. Gun");
+            System.out.println("Which amour would you like?\n1. Antique Blockade\n2. Guardian's Shield\n3. Light Shield");
             cmd = MyReader.readConsole();
             if (cmd != null && Debug.isInteger(cmd)) {
                 int val = Integer.parseInt(cmd);
                 if (val < 1 || val > 3)
-                    System.out.println("Invalid Weapon selection");
+                    System.out.println("Invalid Amour selection");
                 else
                     return val;
             }
             else
-                System.out.println("Invalid Weapon selection");
+                System.out.println("Invalid Amour selection");
         }
     }
 
@@ -164,7 +165,7 @@ public class Console {
 
             if (Debug.isInteger(cmd)) {
                 int val = Integer.parseInt(cmd);
-                if (val > 0 && val < names.length)
+                if (val > 0 && val <= names.length)
                     game.loadHero(val - 1);
                 else {
                     System.out.println("Invalid command");
@@ -273,9 +274,9 @@ public class Console {
         System.out.println("|            Defense  : " + game.getHero().getStats().getDefense());
         System.out.println("|            Hp       : " + game.getHero().getStats().getHp());
         System.out.println("|_______________Artifacts_________________________");
-        System.out.println("| Weapon : " + game.getHero().getArtifacts().getWeapon().getType() + " (damage = +"+game.getHero().getArtifacts().getWeapon().getDamage()+")");
-        System.out.println("| Amour  : " + game.getHero().getArtifacts().getAmour().getType() + " (protection = +"+game.getHero().getArtifacts().getAmour().getDefence()+")");
-        System.out.println("| Helm   : " + game.getHero().getArtifacts().getHelm().getType() + " (hitpoints = +"+game.getHero().getArtifacts().getHelm().getHp()+")");
+        System.out.println("| Weapon : " + game.heroWeapon().getType() + " (damage = +" + game.heroWeapon().getDamage()+")");
+        System.out.println("| Amour  : " + game.heroAmour().getType() + " (protection = +"+game.heroAmour().getDefence()+")");
+        System.out.println("| Helm   : " + game.heroHelm().getType() + " (hitpoints = +" + game.heroHelm().getHp()+")");
         System.out.println("--------------------------------------------------");
     }
 }

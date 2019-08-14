@@ -2,8 +2,6 @@ package com.app.game;
 import java.text.*;
 import java.util.*;
 
-import javax.lang.model.util.ElementScanner6;
-
 import com.app.artifacts.*;
 import com.app.artifacts.amour.*;
 import com.app.artifacts.helms.*;
@@ -54,6 +52,18 @@ public class Game {
 
     public Hero getHero() {
         return this.hero;
+    }
+
+    public Weapon heroWeapon() {
+        return this.hero.getArtifacts().getWeapon();
+    }
+
+    public Helm heroHelm() {
+        return this.hero.getArtifacts().getHelm();
+    }
+
+    public Amour heroAmour() {
+        return this.hero.getArtifacts().getAmour();
     }
 
     private void intitalizeMap() {
@@ -113,51 +123,22 @@ public class Game {
                 }
             }
         }
-        else {
+        else
             if (console != null)
                 console.noHero();
-        }
     }
 
-    private void newHeroCreate(String name, String type, int weapon, int helm, int amour) {
+    public void newHeroCreate(String name, int type, int weapon, int helm, int amour) {
         Hero newHero;
-        if (type.compareToIgnoreCase("seilie") == 0)
+        if (type == 2)
             newHero = new Seilie(name, weapon, helm, amour);
-        else if (type.compareToIgnoreCase("warlock") == 0)
+        else if (type == 3)
             newHero = new Warlock(name, weapon, helm, amour);
         else
             newHero = new Gunman(name, weapon, helm, amour);
         setHero(newHero);
     }
 
-    // private void makeHero() {
-    //     Hero newHero;
-    //     System.out.println("Enter hero name");
-    //     String name = MyReader.readConsole();
-    //     while (true) {
-    //         System.out.println("Which hero type would you want?\n1.Gunman\n2.Seilie\n3.Warlock");
-    //         String cmd = MyReader.readConsole();
-    //         if (Debug.isInteger(cmd)) {
-    //             if (Integer.parseInt(cmd) == 1) {
-    //                 newHero = new Gunman(name);
-    //                 break ;
-    //             }
-    //             else if (Integer.parseInt(cmd) == 2) {
-    //                 newHero = new Seilie(name);
-    //                 break ;
-    //             }
-    //             else if (Integer.parseInt(cmd) == 3) {
-    //                 newHero = new Warlock(name);
-    //                 break ;
-    //             }
-    //             else
-    //                 System.out.println("Error: Invalid input.");
-    //         }
-    //         else
-    //             System.out.println("Error: Input not an Integer");
-    //     }
-    //     setHero(newHero);
-    // }
 
     private void store() {
         if (hero != null && hero.getCoins() > 0) {
