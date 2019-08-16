@@ -4,23 +4,36 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-
+import javax.swing.text.*;
 import com.app.game.*;
 
 public class Swingy extends JFrame {
     private static final long serialVersionUID = 1L;
     private Game game;
     private JComboBox<String> dropDown;
+
     JComboBox<String> heroTypes;
     JComboBox<String> heroWeapons;
     JComboBox<String> heroHelms;
     JComboBox<String> heroAmour;
     JTextField heroName;
+    JPanel gameView = new JPanel();
+    JPanel gameControls = new JPanel();
+    JSplitPane gameDisplay = new JSplitPane(SwingConstants.VERTICAL, gameView, gameControls);
+    JButton left = new JButton("Left");
+    JButton right = new JButton("Right");
+    JButton up = new JButton("Up");
+    JButton down = new JButton("Down");
+    JButton fight = new JButton("Fight");
+    JButton run = new JButton("Run");
+    JButton equip = new JButton("Equip");
+    JButton mainMenu = new JButton("Main Menu");
+    JEditorPane fightSim = new JEditorPane();
 
     public Swingy(Game gme) {
         super("Swingy");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setBounds(400, 300, 500, 300);
+        setBounds(400, 300, 700, 500);
         setResizable(true);
         this.game = gme;
     }
@@ -35,22 +48,86 @@ public class Swingy extends JFrame {
         public void actionPerformed(ActionEvent e) {
             if (btnVal == 1)
                 newGame();
-            else if (btnVal == 5)
-                store();
+            else if (btnVal == 2)
+                play();
+            else if (btnVal == 3)
+                selectPlayer();
             else if (btnVal == 4)
                 showStats();
+            else if (btnVal == 5)
+                store();
+            else if (btnVal == 6)
+                System.exit(0);
             else if (btnVal == 0)
                 game.save();
             else if (btnVal == 10)
                 mainMenu();
-            else if (btnVal == 6)
-                System.exit(0);
-            else if (btnVal == 3)
-                selectPlayer();
             else if (btnVal == 42)
                 game.loadHero(dropDown.getSelectedIndex());
             else if (btnVal == 20)
                 createHero();
+            else if (btnVal == 33)
+                game.move(4);
+            else if (btnVal == 34)
+                game.move(2);
+            else if (btnVal == 35)
+                game.move(1);
+            else if (btnVal == 36)
+                game.move(3);
+        }
+    }
+
+    public void play() {
+        addBtnComp(mainMenu, gameControls, Color.RED,100, 100, 100, 50, 10);
+        addBtnComp(fight, gameControls, Color.RED,100, 100, 100, 50, 30);
+        addBtnComp(run, gameControls, Color.RED,100, 100, 100, 50, 31);
+        addBtnComp(equip, gameControls, Color.RED,100, 100, 100, 50, 32);
+        addBtnComp(left, gameControls, Color.RED,100, 100, 100, 50, 33);
+        addBtnComp(right, gameControls, Color.RED,100, 100, 100, 50, 34);
+        addBtnComp(up, gameControls, Color.RED,100, 100, 100, 50, 35);
+        addBtnComp(down, gameControls, Color.RED,100, 100, 100, 50, 36);
+
+        updateControls();
+        fightSim.setEnabled(false);
+        fightSim.setPreferredSize(new Dimension(350, 470));
+        fightSim.setForeground(Color.red);
+        JScrollPane viewScroll = new JScrollPane(fightSim, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        gameView.add(viewScroll);
+        gameControls.setMinimumSize(new Dimension(300, 500));
+        gameView.setMinimumSize(new Dimension(380, 400));
+        setContentPane(gameDisplay);
+        gameDisplay.setBackground(Color.DARK_GRAY);
+        setVisible(true);
+    }
+
+    private void updateControls() {
+        if (!game.metEnemy()) {
+            fight.setEnabled(false);
+            run.setEnabled(false);
+            equip.setEnabled(false);
+            left.setEnabled(true);
+            right.setEnabled(true);
+            up.setEnabled(true);
+            down.setEnabled(true);
+        }
+        else {
+            fight.setEnabled(true);
+            run.setEnabled(true);
+            equip.setEnabled(true);
+            left.setEnabled(false);
+            right.setEnabled(false);
+            up.setEnabled(false);
+            down.setEnabled(false);
+        }
+    }
+
+    public void updateGamePanel(String s) {
+        try {
+            updateControls();
+            Document doc = fightSim.getDocument();
+            doc.insertString(doc.getLength(), s, null);
+        } catch(BadLocationException exc) {
+            exc.printStackTrace();
         }
     }
 
@@ -120,7 +197,9 @@ public class Swingy extends JFrame {
             msg.setForeground(Color.GREEN);
         else
             msg.setForeground(Color.RED);
+        msg.setFont(new Font("Pangrams", Font.BOLD, 19));
         messagePanel.add(msg);
+        msg.setAlignmentX(Component.CENTER_ALIGNMENT);
         addBtnComp(backtoMenu, messagePanel, Color.RED,100, 100, 100, 50, 10);
 
         setContentPane(messagePanel);
@@ -271,9 +350,18 @@ public class Swingy extends JFrame {
         b.setBackground(Color.BLUE);
         b.setAlignmentX(Component.CENTER_ALIGNMENT);
         b.setMinimumSize(new Dimension(300, 80));
+        b.setLocation(30, 30);
         b.setOpaque(true);
         b.setBorderPainted(false);
         b.addActionListener(new MenuListener(btnCmdVal));
         p.add(b);
+    }
+
+    public void metEnemy() {
+        updateGamePanel("You met "+ game.getEnemy().getName() +". Fight or run? ");
+    }
+
+    public void requestDirection() {
+        updateGamePanel("Please select a direction to move. Your current coordinates are (x : " + game.getHero().getCoordinates().getLatitude() + " , y : "+ game.getHero().getCoordinates().getLongitude() +")");
     }
 }

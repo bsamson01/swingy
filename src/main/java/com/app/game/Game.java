@@ -26,13 +26,19 @@ public class Game {
     private String platform;
     private Swingy swingy = null;
     private Console console = null;
+    private Boolean encount = false;
+    private Boolean moved = true;
+
+    public Boolean metEnemy() {
+        return this.encount;
+    }
 
     public Game(String platform) {
         if (platform.compareToIgnoreCase("gui") == 0) {
             swingy = new Swingy(this);
         }
         else
-            console = new Console(this);
+            this.console = new Console(this);
         menu();
     }
 
@@ -98,6 +104,10 @@ public class Game {
         return this.mapSize;
     }
 
+    public void guiGetDirection() { 
+        System.out.println("Hello");
+    }
+
     public void play() {
 
         if (this.hero != null) {
@@ -105,13 +115,13 @@ public class Game {
             this.tmpArtifacts = new Artifacts("temp");
             remakeMap();
             while (alive) {
+                this.encount = false;
                 if (console != null) {
                     int val = console.getDirection();
                     if (val != 0)
                         move(val);
                     else
                         break ;
-
                 }
                 if (this.inBounds == 0) {
                     if (console != null) {
@@ -125,7 +135,7 @@ public class Game {
         }
         else
             if (console != null)
-                console.noHero();
+                this.console.noHero();
     }
 
     public void newHeroCreate(String name, int type, int weapon, int helm, int amour) {
@@ -205,12 +215,15 @@ public class Game {
             System.out.println("Sorry, You do not have any coins to access the store");
     }
 
-    private void move(int direction) {
-        int lat = hero.getCoordinates().getLatitude();
-        int lng = hero.getCoordinates().getLongitude();
+    public void move(int direction) {
+        this.encount = false;
+        int lat = this.hero.getCoordinates().getLatitude();
+        int lng = this.hero.getCoordinates().getLongitude();
 
         map[lng][lat] = 0;
 
+        System.out.println("Hello");
+        System.exit(0);
         if (direction == 4)
             hero.getCoordinates().moveLeft();
         else if (direction == 2)
@@ -221,12 +234,12 @@ public class Game {
             hero.getCoordinates().moveDown();
         lat = hero.getCoordinates().getLatitude();
         lng = hero.getCoordinates().getLongitude();
-        if (lng >= mapSize || lng < 0 || lat >= mapSize || lat < 0)
-            inBounds = 0;
-        else if (map[lng][lat] == 1)
+        if (lng >= this.mapSize || lng < 0 || lat >= this.mapSize || lat < 0)
+            this.inBounds = 0;
+        else if (this.map[lng][lat] == 1)
             encounter();
         else
-            map[lng][lat] = 2;
+            this.map[lng][lat] = 2;
     }
 
     private void fight() {
@@ -236,55 +249,55 @@ public class Game {
         while (hero.getStats().getHp() > 0 && enemy.getStats().getHp() > 0) {
 
             sleep(300);
-            damage = hero.getStats().getAttack() - (int)(0.5 * enemy.getStats().getDefense());
+            damage = hero.getStats().getAttack() - (int)(0.2 * enemy.getStats().getDefense());
             if (damage < (int)(0.2 * hero.getStats().getAttack()))
                 damage = (int)(0.2 * hero.getStats().getAttack());
             if (rand.nextInt(8) == 4) {
                 enemy.getStats().reduceHp(damage * 3);
                 if (console != null)
-                    console.enemyHit(damage, true);
+                    this.console.enemyHit(damage, true);
             }
             else {
                 enemy.getStats().reduceHp(damage);
                 if (console != null)
-                    console.enemyHit(damage, false);
+                    this.console.enemyHit(damage, false);
             }
             sleep(300);
 
             if (enemy.getStats().getHp() > 0) {
-                damage = enemy.getStats().getAttack() - (int)(0.3 * hero.getStats().getDefense());
+                damage = enemy.getStats().getAttack() - (int)(0.1 * hero.getStats().getDefense());
                 if (damage < (int)(0.4 *enemy.getStats().getAttack()));
                     damage = (int)(0.4 *enemy.getStats().getAttack());
                 if (rand.nextInt(5) == 3) {
                     hero.getStats().reduceHp(damage * 5);
-                    if (console != null)
-                        console.heroHit(damage, true);
+                    if (this.console != null)
+                        this.console.heroHit(damage, true);
                 }
                 else {
                     hero.getStats().reduceHp(damage);
                     if (console != null)
-                        console.heroHit(damage, false);
+                        this.console.heroHit(damage, false);
                 }
             }
         }
         if (hero.getStats().getHp() < 0) {
             if (console != null)
-                console.heroKilled();
+                this.console.heroKilled();
             this.alive = false;
         }
         else {
             if (console != null)
-                console.enemyKilled();
+                this.console.enemyKilled();
             hero.gainExp(300 / hero.getLevel());
             hero.gainCoins(1 * hero.getLevel());
             pickItem();
         }
     }
 
-    public void menu(){
+    public void menu() {
         if (console != null)
             while (true)
-                console.menu();
+                this.console.menu();
         else
             swingy.mainMenu();
     }
@@ -296,15 +309,15 @@ public class Game {
             if (val == 1)
                 play();
             else if (val == 2)
-                console.newGame();
+                this.console.newGame();
             else if (val == 3) {
                 save();
             }
             else if (val == 4)
-                console.load();
+                this.console.load();
             else if (val == 5 && hero != null) {
                 if (console != null)
-                    console.printHeroInfo();
+                    this.console.printHeroInfo();
             }
             else if (val == 6)
                store();
@@ -313,7 +326,7 @@ public class Game {
             }
         }
         else
-            console.menu();
+            this.console.menu();
     }
 
     private void pickItem() {
@@ -361,17 +374,18 @@ public class Game {
     private void run() {
         if ((rand.nextInt(2) + 1) % 2 == 0) {
                 if (console != null)
-                    console.evade();
+                    this.console.evade();
                 hero.gainExp(100 / hero.getLevel());
+                move((rand.nextInt(3) + 1));
         }
         else {
             if (this.console != null)
-                console.failedRun();
+                this.console.failedRun();
             hero.getStats().reduceHp(enemy.getStats().getAttack() * 3);
         }
         if (hero.getStats().getHp() < 0) {
             if (console != null)
-                console.heroKilled();
+                this.console.heroKilled();
             this.alive = false;
         }
     }
@@ -388,8 +402,11 @@ public class Game {
         int type = rand.nextInt(3 - 1) + 1;
         enemy = new Enemy(enemies[type], hero.getLevel());
         if (this.console != null)
-            console.metEnemy();
+            this.console.metEnemy();
+        else
+            this.swingy.metEnemy();
         String act = MyReader.readConsole();
+        this.encount = true;
         if (act.toLowerCase().compareToIgnoreCase("fight") == 0)
             fight();
         else
