@@ -1,4 +1,8 @@
 package com.app.game;
+
+import com.app.artifacts.amour.Amour;
+import com.app.artifacts.helms.Helm;
+import com.app.artifacts.weapons.*;
 import com.app.debug.*;
 import com.app.readWrite.*;
 
@@ -211,6 +215,18 @@ public class Console {
 
     public void metEnemy() {
         System.out.println("You met "+ game.getEnemy().getName() +". Fight or run? ");
+        String act = MyReader.readConsole();
+        if (act.toLowerCase().compareToIgnoreCase("fight") == 0)
+            game.fight();
+        else
+            game.run();
+    }
+
+    public void printEnemyStats() {
+        System.out.println("Enemy name   : " + game.getEnemy().getName());
+        System.out.println("Attack       : " + game.getEnemy().getStats().getAttack());
+        System.out.println("Defence      : " + game.getEnemy().getStats().getDefense());
+        System.out.println("Hp           : " + game.getEnemy().getStats().getHp());
     }
 
     public int getDirection() {
@@ -278,5 +294,34 @@ public class Console {
         System.out.println("| Amour  : " + game.heroAmour().getType() + " (protection = +"+game.heroAmour().getDefence()+")");
         System.out.println("| Helm   : " + game.heroHelm().getType() + " (hitpoints = +" + game.heroHelm().getHp()+")");
         System.out.println("--------------------------------------------------");
+    }
+
+    public String inspect() {
+        System.out.println(game.getEnemy().getName() + " dropped an item . Click 1 to inspect or any key to ignore");
+        return (MyReader.readConsole());
+    }
+
+    public String pick() {
+        System.out.println("Do you want to equip(e) or destroy(any key)?");
+        return (MyReader.readConsole());
+    }
+
+    public void printWeaponInfo(Weapon wpn) {
+        System.out.println("|  Weapon      : " + wpn.getType() );
+        System.out.println("|  Damage      : " + wpn.getDamage());
+    }
+
+    public void printAmourInfo(Amour amr) {
+        System.out.println("|  Amour      : " + amr.getType() );
+        System.out.println("|  Defence    : " + amr.getDefence());
+    }
+
+    public void printHelmInfo(Helm hlm) {
+        System.out.println("|  Helm    : " + hlm.getType() );
+        System.out.println("|  Hp      : " + hlm.getHp());
+    }
+
+    public void leveledUp(int level) {
+        System.out.println("Congratulations you haved leved up to level " + level);
     }
 }

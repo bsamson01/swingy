@@ -5,6 +5,10 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.text.*;
+
+import com.app.artifacts.amour.*;
+import com.app.artifacts.helms.*;
+import com.app.artifacts.weapons.*;
 import com.app.game.*;
 
 public class Swingy extends JFrame {
@@ -27,6 +31,7 @@ public class Swingy extends JFrame {
     JButton fight = new JButton("Fight");
     JButton run = new JButton("Run");
     JButton equip = new JButton("Equip");
+    JButton inspect = new JButton("Inspect");
     JButton mainMenu = new JButton("Main Menu");
     JEditorPane fightSim = new JEditorPane();
 
@@ -74,10 +79,23 @@ public class Swingy extends JFrame {
                 game.move(1);
             else if (btnVal == 36)
                 game.move(3);
+            else if (btnVal == 30)
+                game.fight();
+            else if (btnVal == 31)
+                game.run();
+            else if (btnVal == 37)
+                game.guiInspect();
+            else if (btnVal == 32)
+                game.guiPickItem();
         }
     }
 
     public void play() {
+        if (gameDisplay != null) {
+            gameView = new JPanel();
+            gameControls = new JPanel();
+            gameDisplay = new JSplitPane(SwingConstants.VERTICAL, gameView, gameControls);
+        }
         addBtnComp(mainMenu, gameControls, Color.RED,100, 100, 100, 50, 10);
         addBtnComp(fight, gameControls, Color.RED,100, 100, 100, 50, 30);
         addBtnComp(run, gameControls, Color.RED,100, 100, 100, 50, 31);
@@ -86,6 +104,7 @@ public class Swingy extends JFrame {
         addBtnComp(right, gameControls, Color.RED,100, 100, 100, 50, 34);
         addBtnComp(up, gameControls, Color.RED,100, 100, 100, 50, 35);
         addBtnComp(down, gameControls, Color.RED,100, 100, 100, 50, 36);
+        addBtnComp(inspect, gameControls, Color.RED,100, 100, 100, 50, 37);
 
         updateControls();
         fightSim.setEnabled(false);
@@ -98,9 +117,11 @@ public class Swingy extends JFrame {
         setContentPane(gameDisplay);
         gameDisplay.setBackground(Color.DARK_GRAY);
         setVisible(true);
+        game.remakeMap();
+        this.requestDirection();
     }
 
-    private void updateControls() {
+    public void updateControls() {
         if (!game.metEnemy()) {
             fight.setEnabled(false);
             run.setEnabled(false);
@@ -119,13 +140,23 @@ public class Swingy extends JFrame {
             up.setEnabled(false);
             down.setEnabled(false);
         }
+
+        if (game.picking())
+            equip.setEnabled(true);
+        else
+            equip.setEnabled(false);
+        
+        if (game.inspecting())
+            inspect.setEnabled(true);
+        else
+            inspect.setEnabled(false);
     }
 
     public void updateGamePanel(String s) {
         try {
             updateControls();
             Document doc = fightSim.getDocument();
-            doc.insertString(doc.getLength(), s, null);
+            doc.insertString(doc.getLength(), s + "\n", null);
         } catch(BadLocationException exc) {
             exc.printStackTrace();
         }
@@ -357,11 +388,77 @@ public class Swingy extends JFrame {
         p.add(b);
     }
 
+    public void droppedItem() {
+        updateGamePanel(game.getEnemy().getName() + " dropped an item . Click inspect to view it.");
+        updateControls();
+    }
+
     public void metEnemy() {
-        updateGamePanel("You met "+ game.getEnemy().getName() +". Fight or run? ");
+        updateGamePanel("You met "+ game.getEnemy().getName() +". Choose wether to fight or run?");
+        updateControls();
+    }
+
+    public void endOfMap() {
+        updateGamePanel("You have reached the end of the map");
+        updateControls();
     }
 
     public void requestDirection() {
         updateGamePanel("Please select a direction to move. Your current coordinates are (x : " + game.getHero().getCoordinates().getLatitude() + " , y : "+ game.getHero().getCoordinates().getLongitude() +")");
+    }
+
+    public void enemyHit(int damage, Boolean critical) {
+        if (critical)
+            updateGamePanel("You hit " + game.getEnemy().getName() + " by " + damage * 3 + "(critical hit)");
+        else
+            updateGamePanel("You hit " + game.getEnemy().getName() + " by " + damage);
+    }
+
+    public void heroHit(int damage, Boolean critical) {
+        if (critical)
+            updateGamePanel(game.getEnemy().getName() + " hit you by " + damage * 5 + "(critical hit)");
+        else
+            updateGamePanel(game.getEnemy().getName() + " hit you by " + damage);
+    }
+
+    public void enemyKilled() {
+        updateGamePanel("You slayed " + game.getEnemy().getName());
+        updateControls();
+    }
+
+    public void heroKilled() {
+        updateGamePanel(game.getEnemy().getName() + " killed you");
+        updateControls();
+    }
+
+    public void printEnemyStats() {
+        updateGamePanel("Enemy name   : " + game.getEnemy().getName());
+        updateGamePanel("Attack       : " + game.getEnemy().getStats().getAttack());
+        updateGamePanel("Defence      : " + game.getEnemy().getStats().getDefense());
+        updateGamePanel("Hp           : " + game.getEnemy().getStats().getHp());
+        updateControls();
+    }
+
+    public void printWeaponInfo(Weapon wpn) {
+        updateGamePanel("|  Weapon      : " + wpn.getType() );
+        updateGamePanel("|  Damage      : " + wpn.getDamage());
+        updateControls();
+    }
+
+    public void printAmourInfo(Amour amr) {
+        updateGamePanel("|  Amour      : " + amr.getType() );
+        updateGamePanel("|  Defence    : " + amr.getDefence());
+        updateControls();
+    }
+
+    public void printHelmInfo(Helm hlm) {
+        updateGamePanel("|  Helm    : " + hlm.getType() );
+        updateGamePanel("|  Hp      : " + hlm.getHp());
+        updateControls();
+    }
+
+    public void leveledUp(int level) {
+        updateGamePanel("Congratulations you haved leved up to level " + level);
+        updateControls();
     }
 }

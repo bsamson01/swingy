@@ -22,12 +22,4 @@ public class Enemy {
     public String getName() {
         return this.type;
     }
-
-    public void printStats() {
-        System.out.println("Enemy name   : " + this.getName());
-        System.out.println("Attack       : " + stats.getAttack());
-        System.out.println("Defence      : " + stats.getDefense());
-        System.out.println("Hp           : " + stats.getHp());
-    }
-
 }

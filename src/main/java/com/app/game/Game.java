@@ -28,6 +28,9 @@ public class Game {
     private Console console = null;
     private Boolean encount = false;
     private Boolean moved = true;
+    private Boolean inspecting = false;
+    private Boolean picking = false;
+    private int pickVal = 0;
 
     public Boolean metEnemy() {
         return this.encount;
@@ -105,7 +108,7 @@ public class Game {
     }
 
     public void guiGetDirection() { 
-        System.out.println("Hello");
+        swingy.requestDirection();
     }
 
     public void play() {
@@ -116,7 +119,7 @@ public class Game {
             remakeMap();
             while (alive) {
                 this.encount = false;
-                if (console != null) {
+                if (this.console != null) {
                     int val = console.getDirection();
                     if (val != 0)
                         move(val);
@@ -124,8 +127,8 @@ public class Game {
                         break ;
                 }
                 if (this.inBounds == 0) {
-                    if (console != null) {
-                        if (console.endOfMap())
+                    if (this.console != null) {
+                        if (this.console.endOfMap())
                             remakeMap();
                         else
                             break ;
@@ -134,7 +137,7 @@ public class Game {
             }
         }
         else
-            if (console != null)
+            if (this.console != null)
                 this.console.noHero();
     }
 
@@ -216,51 +219,78 @@ public class Game {
     }
 
     public void move(int direction) {
-        this.encount = false;
-        int lat = this.hero.getCoordinates().getLatitude();
-        int lng = this.hero.getCoordinates().getLongitude();
+        if (getHero().getCoordinates().getLatitude() > 0 && getHero().getCoordinates().getLatitude() < this.mapSize - 1 && getHero().getCoordinates().getLongitude() > 0 && getHero().getCoordinates().getLongitude() < this.mapSize - 1 ) {
+            this.encount = false;
+            int lat = this.hero.getCoordinates().getLatitude();
+            int lng = this.hero.getCoordinates().getLongitude();
 
-        map[lng][lat] = 0;
+            this.map[lng][lat] = 0;
+            if (direction == 4) {
+                hero.getCoordinates().moveLeft();
+                if (this.swingy != null)
+                    swingy.updateGamePanel("moved left");
+            }
+            else if (direction == 2) {
+                hero.getCoordinates().moveRight();
+                if (this.swingy != null)
+                    swingy.updateGamePanel("moved right");
+            }
+            else if (direction == 1)
+                hero.getCoordinates().moveUp();
+            else if (direction == 3)
+                hero.getCoordinates().moveDown();
+            lat = hero.getCoordinates().getLatitude();
+            lng = hero.getCoordinates().getLongitude();
+            if (lng >= this.mapSize || lng < 0 || lat >= this.mapSize || lat < 0)
+                this.inBounds = 0;
+            else if (this.map[lng][lat] == 1)
+                encounter();
+            else {
+                this.map[lng][lat] = 2;
+                if (this.swingy != null)
+                    this.swingy.requestDirection();
+            }
+        }
+        else {
+            if (this.console != null) {
+                if (this.console.endOfMap())
+                    this.play();
+                else
+                    this.console.menu();
+            }
+            else {
+                swingy.endOfMap();
+            }
 
-        System.out.println("Hello");
-        System.exit(0);
-        if (direction == 4)
-            hero.getCoordinates().moveLeft();
-        else if (direction == 2)
-            hero.getCoordinates().moveRight();
-        else if (direction == 1)
-            hero.getCoordinates().moveUp();
-        else if (direction == 3)
-            hero.getCoordinates().moveDown();
-        lat = hero.getCoordinates().getLatitude();
-        lng = hero.getCoordinates().getLongitude();
-        if (lng >= this.mapSize || lng < 0 || lat >= this.mapSize || lat < 0)
-            this.inBounds = 0;
-        else if (this.map[lng][lat] == 1)
-            encounter();
-        else
-            this.map[lng][lat] = 2;
+        }
     }
 
-    private void fight() {
+    public void fight() {
         int damage;
-        enemy.printStats();
+        if (this.console != null)
+            this.console.printEnemyStats();
+        else
+            this.swingy.printEnemyStats();
 
         while (hero.getStats().getHp() > 0 && enemy.getStats().getHp() > 0) {
 
             sleep(300);
             damage = hero.getStats().getAttack() - (int)(0.2 * enemy.getStats().getDefense());
-            if (damage < (int)(0.2 * hero.getStats().getAttack()))
-                damage = (int)(0.2 * hero.getStats().getAttack());
+            if (damage < (int)(0.5 * hero.getStats().getAttack()))
+                damage = (int)(0.5 * hero.getStats().getAttack());
             if (rand.nextInt(8) == 4) {
                 enemy.getStats().reduceHp(damage * 3);
-                if (console != null)
+                if (this.console != null)
                     this.console.enemyHit(damage, true);
+                else
+                    this.swingy.enemyHit(damage, true);
             }
             else {
                 enemy.getStats().reduceHp(damage);
-                if (console != null)
+                if (this.console != null)
                     this.console.enemyHit(damage, false);
+                else
+                    this.swingy.enemyHit(damage, false);
             }
             sleep(300);
 
@@ -272,30 +302,52 @@ public class Game {
                     hero.getStats().reduceHp(damage * 5);
                     if (this.console != null)
                         this.console.heroHit(damage, true);
+                    else
+                        this.swingy.heroHit(damage, true);
                 }
                 else {
                     hero.getStats().reduceHp(damage);
-                    if (console != null)
+                    if (this.console != null)
                         this.console.heroHit(damage, false);
+                    else
+                        this.swingy.heroHit(damage, false);
                 }
             }
         }
         if (hero.getStats().getHp() < 0) {
-            if (console != null)
+            if (this.console != null)
                 this.console.heroKilled();
+            else
+                this.swingy.heroKilled();
             this.alive = false;
+
         }
         else {
-            if (console != null)
+            if (this.console != null)
                 this.console.enemyKilled();
+            else
+                this.swingy.enemyKilled();
             hero.gainExp(300 / hero.getLevel());
             hero.gainCoins(1 * hero.getLevel());
-            pickItem();
+            if (rand.nextInt(5) % 2 == 0) {
+                if (this.console != null)
+                    pickItem();
+            }
+        }
+        if (getHero().checkLeveledUp()) {
+            if (this.console != null)
+                this.console.leveledUp(this.getHero().getLevel());
+            else
+                this.swingy.leveledUp(getHero().getLevel());
+        }
+        if (this.swingy != null) {
+            this.swingy.requestDirection();
+            this.swingy.updateControls();
         }
     }
 
     public void menu() {
-        if (console != null)
+        if (this.console != null)
             while (true)
                 this.console.menu();
         else
@@ -316,7 +368,7 @@ public class Game {
             else if (val == 4)
                 this.console.load();
             else if (val == 5 && hero != null) {
-                if (console != null)
+                if (this.console != null)
                     this.console.printHeroInfo();
             }
             else if (val == 6)
@@ -330,50 +382,77 @@ public class Game {
     }
 
     private void pickItem() {
-        int val;
-        String cmd;
-        if ((rand.nextInt(4) + 1) % 2 == 0) {
-            System.out.println(enemy.getName() + " dropped an item . Click 1 to inspect or any key to ignore");
-            cmd = MyReader.readConsole();
-            if (cmd.compareToIgnoreCase("1") == 0) {
-                val = rand.nextInt(2) + 1;
-                if (val == 1) {
-                    tmpArtifacts.setWeapon(Artifacts.generateWeapon(hero.getLevel()));
-                    tmpArtifacts.getWeapon().printInfo();
-                }
-                else if (val == 2) {
-                    tmpArtifacts.setAmour(Artifacts.generateAmour(hero.getLevel()));
-                    tmpArtifacts.getAmour().printName();
-                }
-                else {
-                    tmpArtifacts.setHelm(Artifacts.generateHelm(hero.getLevel()));
-                    tmpArtifacts.getHelm().printName();
-                }
+        String cmd = null;
+        if (this.console != null)
+            cmd = this.console.inspect();
+        if (cmd.compareToIgnoreCase("1") == 0) {
+            this.pickVal = rand.nextInt(2) + 1;
+            if (this.pickVal == 1) {
+                tmpArtifacts.setWeapon(Artifacts.generateWeapon(hero.getLevel()));
+                if (this.console != null)
+                    console.printWeaponInfo(tmpArtifacts.getWeapon());
+            }
+            else if (this.pickVal == 2) {
+                tmpArtifacts.setAmour(Artifacts.generateAmour(hero.getLevel()));
+                if (this.console != null)
+                    console.printAmourInfo(tmpArtifacts.getAmour());
+            }
+            else {
+                tmpArtifacts.setHelm(Artifacts.generateHelm(hero.getLevel()));
+                if (this.console != null)
+                    console.printHelmInfo(tmpArtifacts.getHelm());
+            }
 
-                System.out.println("Do you want to equip(e) or destroy(any key)?");
-                cmd = MyReader.readConsole();
-                if (cmd.compareToIgnoreCase("e") == 0) {
-                    if (val == 1) {
-                        hero.getArtifacts().setWeapon(this.tmpArtifacts.getWeapon());
-                    }
-                    else if (val == 2) {
-                        hero.getArtifacts().setAmour(this.tmpArtifacts.getAmour());
-                    }
-                    else {
-                        hero.getArtifacts().setHelm(this.tmpArtifacts.getHelm());
-                    }
-                }
+            if (this.console != null)
+                cmd = this.console.pick();
+            if (cmd.compareToIgnoreCase("e") == 0) {
+                if (this.pickVal == 1)
+                    hero.getArtifacts().setWeapon(this.tmpArtifacts.getWeapon());
+                else if (this.pickVal == 2)
+                    hero.getArtifacts().setAmour(this.tmpArtifacts.getAmour());
+                else
+                    hero.getArtifacts().setHelm(this.tmpArtifacts.getHelm());
             }
         }
+    }
+
+    public void guiInspect() {
+
+        this.inspecting = false;
+        this.picking = true;
+        this.pickVal =  rand.nextInt(2) + 1;
+        if (this.pickVal == 1) {
+            tmpArtifacts.setWeapon(Artifacts.generateWeapon(hero.getLevel()));
+            swingy.printWeaponInfo(tmpArtifacts.getWeapon());
+        }
+        else if (this.pickVal == 2) {
+            tmpArtifacts.setAmour(Artifacts.generateAmour(hero.getLevel()));
+            swingy.printAmourInfo(tmpArtifacts.getAmour());
+        }
+        else {
+            tmpArtifacts.setHelm(Artifacts.generateHelm(hero.getLevel()));
+            swingy.printHelmInfo(tmpArtifacts.getHelm());
+        }
+    }
+
+    public void guiPickItem() {
+        this.picking = false;
+        this.inspecting = false;
+        if (this.pickVal == 1)
+            hero.getArtifacts().setWeapon(this.tmpArtifacts.getWeapon());
+        else if (this.pickVal == 2)
+            hero.getArtifacts().setAmour(this.tmpArtifacts.getAmour());
+        else
+            hero.getArtifacts().setHelm(this.tmpArtifacts.getHelm());
     }
 
     public Enemy getEnemy() {
         return this.enemy;
     }
 
-    private void run() {
+    public void run() {
         if ((rand.nextInt(2) + 1) % 2 == 0) {
-                if (console != null)
+                if (this.console != null)
                     this.console.evade();
                 hero.gainExp(100 / hero.getLevel());
                 move((rand.nextInt(3) + 1));
@@ -384,7 +463,7 @@ public class Game {
             hero.getStats().reduceHp(enemy.getStats().getAttack() * 3);
         }
         if (hero.getStats().getHp() < 0) {
-            if (console != null)
+            if (this.console != null)
                 this.console.heroKilled();
             this.alive = false;
         }
@@ -401,16 +480,11 @@ public class Game {
     private void encounter() {
         int type = rand.nextInt(3 - 1) + 1;
         enemy = new Enemy(enemies[type], hero.getLevel());
+        this.encount = true;
         if (this.console != null)
             this.console.metEnemy();
         else
             this.swingy.metEnemy();
-        String act = MyReader.readConsole();
-        this.encount = true;
-        if (act.toLowerCase().compareToIgnoreCase("fight") == 0)
-            fight();
-        else
-            run();
     }
 
     public Boolean save() {
@@ -440,6 +514,16 @@ public class Game {
             loaddedArt.setHelm(new Helm(data[12], Integer.parseInt(data[13])));
             Stats sts = new Stats(Integer.parseInt(data[5]), Integer.parseInt(data[6]), Integer.parseInt(data[7]));
             this.hero = new Hero(data[1], Integer.parseInt(data[2]), Integer.parseInt(data[3]), Integer.parseInt(data[4]), data[14], sts, loaddedArt);
+            setHero(this.hero);
         }
+    }
+
+
+    public Boolean inspecting() {
+        return this.inspecting;
+    }
+
+    public Boolean picking() {
+        return this.picking;
     }
 }
